@@ -14,6 +14,7 @@ import Disclaimer from "./components/Disclaimer";
 import AuthModal from "./components/AuthModal";
 import ProfilePanel from "./components/ProfilePanel";
 import AdminDashboard from "./components/AdminDashboard";
+import ScrollInsightSection from "./components/ScrollInsightSection";
 
 import { analyzeSymptoms, getSampleCase } from "./utils/api";
 import { useHistory } from "./hooks/useHistory";
@@ -241,6 +242,11 @@ export default function App() {
           </AnimatePresence>
           <ResultsDashboard result={result} isVisible={showResults && !isLoading} />
           <AIExplanation result={result} isVisible={showResults && !isLoading} />
+
+        {/* Insight section with ECG line — shows after results */}
+        {showResults && !isLoading && result && (
+          <ScrollInsightSection result={result} />
+        )}
         </div>
 
         <AnimatePresence>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { MapPin, Navigation, AlertCircle } from "lucide-react";
 
 const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -135,22 +135,51 @@ export default function MapSection({ isVisible }) {
     );
   }, [isVisible]);
 
-  return (
-    <section id="map-section" className="py-12 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="text-center mb-8">
-            <span className="section-label">Nearby Care</span>
-            <h2 className="text-3xl sm:text-4xl font-bold mt-2">
-              Find <span className="gradient-text">Hospitals & Clinics</span>
-            </h2>
-          </div>
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "center center"],
+  });
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 55, damping: 20 });
+  const mapScale = useTransform(smoothProgress, [0, 1], [0.92, 1]);
+  const mapOpacity = useTransform(smoothProgress, [0, 0.4], [0, 1]);
 
+  return (
+    <section ref={sectionRef} id="map-section" className="py-12 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header — slides up with stagger */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-8"
+        >
+          <motion.span
+            className="section-label"
+            initial={{ opacity: 0, letterSpacing: "0.3em" }}
+            whileInView={{ opacity: 1, letterSpacing: "0.12em" }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            Nearby Care
+          </motion.span>
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold mt-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Find <span className="gradient-text">Hospitals & Clinics</span>
+          </motion.h2>
+        </motion.div>
+
+        {/* Map wrapper — scale expand + clip reveal */}
+        <motion.div
+          style={{ scale: mapScale, opacity: mapOpacity }}
+          className="will-transform"
+        >
           <div className="glass-card overflow-hidden">
             {/* Map or fallback */}
             {!HAS_KEY ? (
@@ -203,6 +232,7 @@ export default function MapSection({ isVisible }) {
               </>
             )}
           </div>
+        </motion.div>
         </motion.div>
       </div>
     </section>

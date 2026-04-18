@@ -25,12 +25,28 @@ const RISK_CONFIG = {
   },
 };
 
+// ─── Depth-reveal card ────────────────────────────────────────────────────────
+function DepthCard({ children, delay = 0, className = "" }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 56, scale: 0.92 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: false, margin: "-70px" }}
+      transition={{ duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={`card-3d glass-card ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function ProbabilityBar({ probability, index }) {
   return (
     <motion.div
       initial={{ width: 0 }}
-      animate={{ width: `${probability * 100}%` }}
-      transition={{ duration: 1.2, delay: 0.3 + index * 0.15, ease: [0.4, 0, 0.2, 1] }}
+      whileInView={{ width: `${probability * 100}%` }}
+      viewport={{ once: false, margin: "-40px" }}
+      transition={{ duration: 1.3, delay: 0.2 + index * 0.12, ease: [0.4, 0, 0.2, 1] }}
       className="prob-fill"
       style={{ width: 0 }}
     />
@@ -47,27 +63,33 @@ export default function ResultsDashboard({ result, isVisible }) {
       {isVisible && (
         <motion.section
           id="results-dashboard"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          transition={{ duration: 0.5 }}
           className="py-12 px-4 sm:px-6"
         >
           <div className="max-w-4xl mx-auto space-y-6">
             {/* Section header */}
-            <div className="text-center mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center mb-8"
+            >
               <span className="section-label">AI Results</span>
               <h2 className="text-3xl sm:text-4xl font-bold mt-2">
                 Your <span className="gradient-text">Health Analysis</span>
               </h2>
-            </div>
+            </motion.div>
 
             {/* Emergency Alert */}
             <AnimatePresence>
               {result.emergency && (
                 <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
+                  initial={{ scale: 0.88, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   className="emergency-alert p-6 flex items-start gap-4"
                 >
                   <div className="text-4xl animate-heartbeat flex-shrink-0">🚨</div>
@@ -79,8 +101,7 @@ export default function ResultsDashboard({ result, isVisible }) {
                       Your symptoms indicate a potentially serious condition requiring{" "}
                       <strong>immediate medical attention</strong>. Do not wait.
                     </p>
-                    <a
-                      href="tel:911"
+                    <a href="tel:911"
                       className="inline-flex items-center gap-2 bg-red-500 text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-red-600 transition-colors"
                     >
                       <Phone className="w-4 h-4" />
@@ -91,35 +112,41 @@ export default function ResultsDashboard({ result, isVisible }) {
               )}
             </AnimatePresence>
 
+            {/* Risk + Doctor row */}
             <div className="grid sm:grid-cols-2 gap-6">
-              {/* Risk Level */}
+              {/* Risk Level — punch scale on reveal */}
               <motion.div
-                className={`glass-card p-6 bg-gradient-to-br ${risk.bg}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
+                className={`card-3d glass-card p-6 bg-gradient-to-br ${risk.bg}`}
+                initial={{ opacity: 0, scale: 0.88, y: 40 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: false, margin: "-60px" }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                whileInView2={undefined}
               >
-                <span className="section-label">Risk Assessment</span>
-                <div className="mt-4 flex items-center gap-4">
-                  <div className={`text-5xl font-black px-5 py-3 rounded-2xl ${risk.className}`}>
-                    {risk.icon}
-                  </div>
-                  <div>
-                    <div className={`text-2xl font-bold ${risk.className} border-0 shadow-none bg-transparent px-0 py-0`}>
-                      {risk.label}
+                {/* Scale punch: 1 → 1.05 → 1 */}
+                <motion.div
+                  initial={{ scale: 1 }}
+                  whileInView={{ scale: [1, 1.05, 1] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.15, ease: "easeInOut" }}
+                >
+                  <span className="section-label">Risk Assessment</span>
+                  <div className="mt-4 flex items-center gap-4">
+                    <div className={`text-5xl font-black px-5 py-3 rounded-2xl ${risk.className}`}>
+                      {risk.icon}
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{risk.description}</p>
+                    <div>
+                      <div className={`text-2xl font-bold ${risk.className} border-0 shadow-none bg-transparent px-0 py-0`}>
+                        {risk.label}
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{risk.description}</p>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* When to see doctor */}
-              <motion.div
-                className="glass-card p-6"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
+              <DepthCard delay={0.08} className="p-6">
                 <span className="section-label">See a Doctor When</span>
                 <div className="mt-4 flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
@@ -127,16 +154,11 @@ export default function ResultsDashboard({ result, isVisible }) {
                     {result.see_doctor_when || "If symptoms worsen, persist beyond 48 hours, or new symptoms develop."}
                   </p>
                 </div>
-              </motion.div>
+              </DepthCard>
             </div>
 
             {/* Possible Conditions */}
-            <motion.div
-              className="glass-card p-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-            >
+            <DepthCard delay={0} className="p-6">
               <span className="section-label">Possible Conditions</span>
               <h3 className="font-semibold text-gray-700 dark:text-gray-200 mt-2 mb-5 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-blue-400" />
@@ -146,9 +168,10 @@ export default function ResultsDashboard({ result, isVisible }) {
                 {(result.conditions || []).map((cond, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
+                    initial={{ opacity: 0, x: -30, scale: 0.97 }}
+                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                    viewport={{ once: false, margin: "-40px" }}
+                    transition={{ delay: i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -174,15 +197,10 @@ export default function ResultsDashboard({ result, isVisible }) {
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
+            </DepthCard>
 
             {/* Recommended Actions */}
-            <motion.div
-              className="glass-card p-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
-            >
+            <DepthCard delay={0.06} className="p-6">
               <span className="section-label">Recommended Actions</span>
               <h3 className="font-semibold text-gray-700 dark:text-gray-200 mt-2 mb-5">
                 ✅ Steps to Take Now
@@ -191,28 +209,23 @@ export default function ResultsDashboard({ result, isVisible }) {
                 {(result.actions || []).map((action, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + i * 0.08 }}
+                    initial={{ opacity: 0, x: -16, scale: 0.97 }}
+                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                    viewport={{ once: false, margin: "-30px" }}
+                    transition={{ delay: i * 0.07, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                     className="flex items-start gap-3 p-3 rounded-xl bg-blue-50/60 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/20"
+                    whileHover={{ x: 4, transition: { duration: 0.2 } }}
                   >
                     <CheckCircle className="w-5 h-5 text-teal-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                      {action}
-                    </span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{action}</span>
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
+            </DepthCard>
 
             {/* Home Care Tips */}
             {result.home_care && result.home_care.length > 0 && (
-              <motion.div
-                className="glass-card p-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-              >
+              <DepthCard delay={0.1} className="p-6">
                 <span className="section-label">Home Care</span>
                 <h3 className="font-semibold text-gray-700 dark:text-gray-200 mt-2 mb-5">
                   🏠 What You Can Do at Home
@@ -221,17 +234,19 @@ export default function ResultsDashboard({ result, isVisible }) {
                   {result.home_care.map((tip, i) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.6 + i * 0.07 }}
+                      initial={{ opacity: 0, scale: 0.9, y: 16 }}
+                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                      viewport={{ once: false, margin: "-20px" }}
+                      transition={{ delay: i * 0.06, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                       className="flex items-center gap-3 p-3 rounded-xl bg-teal-50/60 dark:bg-teal-900/10 border border-teal-100 dark:border-teal-800/20"
+                      whileHover={{ scale: 1.02, y: -2, transition: { duration: 0.2 } }}
                     >
                       <span className="text-teal-500">💚</span>
                       <span className="text-sm text-gray-700 dark:text-gray-300">{tip}</span>
                     </motion.div>
                   ))}
                 </div>
-              </motion.div>
+              </DepthCard>
             )}
           </div>
         </motion.section>

@@ -438,3 +438,128 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .glass-card, .neuro, .btn-primary, .btn-ghost, .symptom-tag {
   transition: all 0.25s ease;
 }
+
+/* ===================== SCROLL & PERSPECTIVE ===================== */
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
+
+/* Perspective container for 3D scroll effects */
+.perspective-root {
+  perspective: 1200px;
+  perspective-origin: 50% 40%;
+}
+
+/* GPU-promoted layers */
+.will-transform {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ===================== PARALLAX LAYERS ===================== */
+.parallax-slow   { transform: translateZ(-1px) scale(2);   }
+.parallax-normal { transform: translateZ(0px)  scale(1);   }
+.parallax-fast   { transform: translateZ(1px)  scale(0.5); }
+
+/* ===================== ECG LINE ANIMATION ===================== */
+.ecg-svg {
+  overflow: visible;
+}
+
+.ecg-path {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+@keyframes ecgPulse {
+  0%   { stroke-dashoffset: 1200; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.ecg-path.animating {
+  animation: ecgPulse 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Glowing ECG dot */
+@keyframes ecgDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.6); }
+}
+
+.ecg-dot {
+  animation: ecgDot 1.2s ease-in-out infinite;
+}
+
+/* ===================== SCROLL REVEAL HELPERS ===================== */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-up.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.stagger-children > * { transition-delay: calc(var(--i, 0) * 60ms); }
+
+/* ===================== SECTION TRANSITION GRADIENT ===================== */
+.section-fade-top {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+}
+
+.section-fade-bottom {
+  mask-image: linear-gradient(to top, transparent 0%, black 15%);
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 15%);
+}
+
+/* ===================== INSIGHT SECTION ===================== */
+.insight-bg {
+  background: radial-gradient(ellipse at 50% 60%,
+    rgba(59, 150, 242, 0.06) 0%,
+    rgba(20, 184, 166, 0.04) 40%,
+    transparent 70%
+  );
+}
+
+.dark .insight-bg {
+  background: radial-gradient(ellipse at 50% 60%,
+    rgba(59, 150, 242, 0.09) 0%,
+    rgba(20, 184, 166, 0.06) 40%,
+    transparent 70%
+  );
+}
+
+/* ===================== CARD 3D HOVER ===================== */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-3d:hover {
+  transform: perspective(800px) rotateX(3deg) rotateY(-3deg) translateY(-4px);
+}
+
+/* ===================== GLOW PULSE ===================== */
+@keyframes glowPulseBlue {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 150, 242, 0.2); }
+  50%       { box-shadow: 0 0 40px rgba(59, 150, 242, 0.5), 0 0 80px rgba(20, 184, 166, 0.2); }
+}
+
+.glow-blue { animation: glowPulseBlue 3s ease-in-out infinite; }
+
+/* ===================== MAP CLIP REVEAL ===================== */
+.map-reveal {
+  clip-path: inset(8% 5% 8% 5% round 1.25rem);
+  transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.map-reveal.in-view {
+  clip-path: inset(0% 0% 0% 0% round 1.25rem);
+}
+
