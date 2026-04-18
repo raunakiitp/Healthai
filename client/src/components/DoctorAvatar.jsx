@@ -66,13 +66,11 @@ export default function DoctorAvatar({ status = "idle" }) {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            style={{ opacity: ringOpacity }}
             className="absolute rounded-full border will-transform"
             style={{
               width: 130 + i * 30,
               height: 130 + i * 30,
               borderColor: `${color}50`,
-              opacity: undefined, // let motion handle it
             }}
           />
         ))}

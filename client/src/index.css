@@ -33,7 +33,29 @@
   --border-color: #1a2e4a;
   --shadow-neuro-light: 8px 8px 16px #040a14, -8px -8px 16px #0e1f36;
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  /* shadcn compat */
+  --card: 17 29 51;
+  --card-foreground: 240 247 255;
+  --muted-foreground: 74 101 133;
 }
+
+/* shadcn CSS variable tokens (light) */
+:root {
+  --card: 255 255 255;
+  --card-foreground: 15 23 42;
+  --muted-foreground: 100 116 139;
+}
+
+/* ===================== SPOTLIGHT ANIMATION ===================== */
+@keyframes spotlight {
+  0%   { opacity: 0; transform: translate(-72%, -62%) scale(0.5); }
+  100% { opacity: 1; transform: translate(-50%, -40%) scale(1); }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease forwards;
+}
+
 
 /* ===================== BASE STYLES ===================== */
 * { box-sizing: border-box; }
