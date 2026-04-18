@@ -8,22 +8,14 @@ An AI-powered medical symptom analysis app built with **React + Vite** (frontend
 
 ## ✨ Features
 
-### User Features
 - 🧠 **AI Symptom Analysis** — powered by Google Gemini 2.5 Flash
 - 🗺️ **Nearby Hospital Map** — find clinics within 5km
-- 📋 **History Panel** — past analyses synced to server when logged in
-- 👤 **User Accounts** — register, login, profile with avatar & color
+- 👤 **User Accounts** — register, login, profile with custom avatar & color
+- 📋 **History Panel** — analyses synced to server when logged in
+- 📊 **Analysis Stats** — see your personal risk level breakdown
 - 🔑 **Change Password** — from inside the profile panel
-- 🌙 **Dark / Light Mode** — with system preference detection
-- 📊 **Analysis Stats** — see your risk level breakdown
-
-### Admin Features
-- 👑 **Admin Dashboard** — slides in from the left (only for admins)
-- 📈 **Overview Stats** — total users, active today, analyses, risk breakdown, 7-day chart
-- 👥 **User Management** — search, view details, ban/unban, promote to admin, delete
-- 🔄 **Clear User History** — from admin user detail drawer
-- ➕ **Create User** — directly from the admin panel
-- 📡 **Activity Feed** — latest 30 analyses across all users with risk levels
+- 🌙 **Dark / Light Mode**
+- 👑 **Admin Panel** — restricted dashboard for platform management (see below)
 
 ---
 
@@ -43,16 +35,23 @@ cd Healthai
 ```bash
 cd server
 cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
+```
+
+Open `.env` and fill in your values:
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+JWT_SECRET=any_long_random_string
+ADMIN_EMAIL=your_admin_email@example.com
+ADMIN_PASSWORD=your_secure_password
+```
+
+Then install and run:
+```bash
 npm install
 npm run dev
 ```
 
 Server runs at **http://localhost:5000**
-
-On first run, an admin account is automatically created:
-- **Email:** `admin@healthai.com`
-- **Password:** `admin@123`
 
 ### 3. Setup the Client
 ```bash
@@ -65,58 +64,47 @@ Client runs at **http://localhost:5173**
 
 ---
 
+## 👤 Creating an Account
+
+1. Open the app at `http://localhost:5173`
+2. Click **Sign In** in the navbar
+3. Switch to the **Register** tab
+4. Fill in your name, email, and password
+5. You're in! Your analysis history will sync across devices
+
+---
+
+## 👑 Admin Panel
+
+The app includes a restricted **Admin Dashboard** accessible only to admin accounts.
+
+To set up your admin account, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `server/.env` before starting the server — the admin account will be created automatically on first run.
+
+Once logged in as admin, a red **"Admin"** button will appear in the navbar, giving access to:
+- Platform statistics & charts
+- Full user management (view, ban, promote, delete)
+- System-wide activity feed
+
+> Admin credentials are configured privately via environment variables and are never committed to the repository.
+
+---
+
 ## 📁 Project Structure
 
 ```
 ├── client/                  # React + Vite frontend
 │   └── src/
 │       ├── components/      # UI components
-│       │   ├── AuthModal.jsx
-│       │   ├── ProfilePanel.jsx
-│       │   ├── AdminDashboard.jsx
-│       │   └── ...
-│       ├── context/
-│       │   └── AuthContext.jsx
-│       ├── hooks/
-│       │   └── useHistory.js
-│       └── utils/
-│           └── api.js
+│       ├── context/         # AuthContext
+│       ├── hooks/           # useHistory
+│       └── utils/           # api.js
 │
 └── server/                  # Node.js + Express backend
-    ├── db/
-    │   └── database.js      # SQLite setup + admin seed
-    ├── middleware/
-    │   ├── authMiddleware.js
-    │   └── adminMiddleware.js
-    ├── routes/
-    │   ├── auth.js          # Register / Login / Profile
-    │   ├── history.js       # Per-user analysis history
-    │   ├── analyze.js       # Gemini AI analysis
-    │   └── admin.js         # Admin-only routes
-    └── app.js
+    ├── db/                  # SQLite setup + admin seed
+    ├── middleware/           # auth + admin middleware
+    ├── routes/              # auth, history, analyze, admin
+    └── services/            # Gemini AI service
 ```
-
----
-
-## 🔐 API Endpoints
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/api/auth/register` | — | Create account |
-| POST | `/api/auth/login` | — | Login, get JWT |
-| GET | `/api/auth/me` | User | Get current user |
-| PUT | `/api/auth/profile` | User | Update name/avatar |
-| PUT | `/api/auth/change-password` | User | Change password |
-| POST | `/api/analyze` | — | AI symptom analysis |
-| GET | `/api/history` | User | Fetch history |
-| POST | `/api/history` | User | Save entry |
-| DELETE | `/api/history/:id` | User | Delete one entry |
-| GET | `/api/admin/stats` | Admin | Platform stats |
-| GET | `/api/admin/users` | Admin | List all users |
-| DELETE | `/api/admin/users/:id` | Admin | Delete user |
-| POST | `/api/admin/users/:id/ban` | Admin | Toggle ban |
-| POST | `/api/admin/users/:id/promote` | Admin | Toggle admin role |
-| GET | `/api/admin/activity` | Admin | Recent activity feed |
 
 ---
 
