@@ -1,0 +1,440 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================== CSS VARIABLES ===================== */
+:root {
+  --bg-primary: #f0f7ff;
+  --bg-secondary: #e8f2ff;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --bg-glass-border: rgba(255, 255, 255, 0.5);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-blue: #3b96f2;
+  --accent-teal: #14b8a6;
+  --border-color: #e0eeff;
+  --shadow-neuro-light: 8px 8px 16px #d1dce8, -8px -8px 16px #ffffff;
+  --shadow-glass: 0 8px 32px 0 rgba(31, 58, 147, 0.12);
+}
+
+.dark {
+  --bg-primary: #060d1a;
+  --bg-secondary: #0c1829;
+  --bg-card: #111d33;
+  --bg-glass: rgba(17, 29, 51, 0.8);
+  --bg-glass-border: rgba(59, 150, 242, 0.15);
+  --text-primary: #f0f7ff;
+  --text-secondary: #94b8d4;
+  --text-muted: #4a6585;
+  --border-color: #1a2e4a;
+  --shadow-neuro-light: 8px 8px 16px #040a14, -8px -8px 16px #0e1f36;
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* ===================== BASE STYLES ===================== */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===================== GLASS MORPHISM ===================== */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--bg-glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--bg-glass-border);
+  box-shadow: 0 8px 32px rgba(59, 150, 242, 0.1), inset 0 1px 0 rgba(255,255,255,0.2);
+  border-radius: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(59, 150, 242, 0.18), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* ===================== NEUMORPHISM ===================== */
+.neuro {
+  background: var(--bg-card);
+  box-shadow: var(--shadow-neuro-light);
+  border-radius: 1rem;
+  transition: all 0.25s ease;
+}
+
+.neuro:hover {
+  box-shadow: 4px 4px 8px #d1dce8, -4px -4px 8px #ffffff;
+}
+
+.dark .neuro {
+  box-shadow: 8px 8px 16px #040a14, -8px -8px 16px #0e1f36;
+}
+
+.dark .neuro:hover {
+  box-shadow: 4px 4px 8px #040a14, -4px -4px 8px #0e1f36;
+}
+
+/* ===================== GRADIENTS ===================== */
+.gradient-text {
+  background: linear-gradient(135deg, #3b96f2 0%, #14b8a6 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 50%, #14b8a6 100%);
+}
+
+.gradient-mesh {
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(at 40% 20%, rgba(59, 150, 242, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.08) 0px, transparent 50%);
+}
+
+/* ===================== SCROLLBAR ===================== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+/* ===================== INPUT STYLES ===================== */
+.medical-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.medical-input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 150, 242, 0.15), 0 4px 12px rgba(59, 150, 242, 0.1);
+}
+
+.medical-input::placeholder { color: var(--text-muted); }
+
+/* ===================== BUTTONS ===================== */
+.btn-primary {
+  background: linear-gradient(135deg, #3b96f2, #14b8a6);
+  color: white;
+  border: none;
+  border-radius: 0.875rem;
+  padding: 0.875rem 2rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.4s ease;
+}
+
+.btn-primary:hover::before { left: 100%; }
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 150, 242, 0.4);
+}
+
+.btn-primary:active { transform: translateY(0px); }
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: rgba(59, 150, 242, 0.06);
+}
+
+/* ===================== RANGE SLIDER ===================== */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  box-shadow: 0 2px 6px rgba(59, 150, 242, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(59, 150, 242, 0.5);
+}
+
+/* ===================== MEDICAL SCANNER ANIMATION ===================== */
+.scanner-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #3b96f2, #14b8a6, #3b96f2, transparent);
+  animation: scan 2s linear infinite;
+  box-shadow: 0 0 20px rgba(59, 150, 242, 0.8);
+}
+
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* ===================== RISK LEVEL BADGES ===================== */
+.risk-low {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(20, 184, 166, 0.12));
+  border: 1.5px solid rgba(34, 197, 94, 0.3);
+  color: #16a34a;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
+}
+
+.risk-medium {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.12), rgba(249, 115, 22, 0.08));
+  border: 1.5px solid rgba(234, 179, 8, 0.35);
+  color: #a16207;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.15);
+}
+
+.risk-high {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(220, 38, 38, 0.08));
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  color: #dc2626;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.dark .risk-low { color: #4ade80; }
+.dark .risk-medium { color: #facc15; }
+.dark .risk-high { color: #f87171; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(239, 68, 68, 0.5); }
+}
+
+/* ===================== PROBABILITY BAR ===================== */
+.prob-bar {
+  height: 8px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.prob-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #3b96f2, #14b8a6);
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.prob-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ===================== EMERGENCY ALERT ===================== */
+.emergency-alert {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.06));
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  border-radius: 1rem;
+  animation: emergencyPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes emergencyPulse {
+  0%, 100% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+  50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+/* ===================== DOCTOR AVATAR ===================== */
+.doctor-avatar-glow {
+  filter: drop-shadow(0 0 20px rgba(59, 150, 242, 0.5));
+  animation: float 6s ease-in-out infinite;
+}
+
+.hologram-ring {
+  border: 2px solid rgba(59, 150, 242, 0.4);
+  border-radius: 50%;
+  animation: holoPulse 3s ease-in-out infinite;
+}
+
+@keyframes holoPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.7; }
+}
+
+/* ===================== HEARTBEAT CHART ===================== */
+.heartbeat-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawLine 2s linear infinite;
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ===================== TAG PILL STYLES ===================== */
+.symptom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
+  user-select: none;
+}
+
+.symptom-tag.unselected {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.symptom-tag.unselected:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: rgba(59, 150, 242, 0.06);
+  transform: translateY(-1px);
+}
+
+.symptom-tag.selected {
+  background: linear-gradient(135deg, rgba(59, 150, 242, 0.15), rgba(20, 184, 166, 0.1));
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  box-shadow: 0 2px 8px rgba(59, 150, 242, 0.2);
+}
+
+/* ===================== FLOATING PARTICLES ===================== */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 150, 242, 0.4), transparent);
+  animation: floatParticle 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  33% { transform: translate(20px, -30px) scale(1.1); opacity: 0.6; }
+  66% { transform: translate(-15px, 15px) scale(0.9); opacity: 0.3; }
+}
+
+/* ===================== HISTORY PANEL ===================== */
+.history-drawer {
+  position: fixed;
+  top: 0; right: -400px;
+  width: 380px;
+  height: 100vh;
+  z-index: 100;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.history-drawer.open { right: 0; }
+
+/* ===================== MAP CONTAINER ===================== */
+.map-wrapper {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===================== SECTION HEADERS ===================== */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+}
+
+/* ===================== TRANSITIONS ===================== */
+* { transition-property: background-color, border-color, color, fill, stroke; transition-duration: 0.2s; }
+
+/* Override for transforms */
+.glass-card, .neuro, .btn-primary, .btn-ghost, .symptom-tag {
+  transition: all 0.25s ease;
+}
