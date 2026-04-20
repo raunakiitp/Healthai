@@ -183,7 +183,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen gradient-mesh transition-colors duration-300">
+    <div className="min-h-screen bg-black text-white transition-colors duration-300">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -272,8 +272,9 @@ export default function App() {
 
         <MapSection isVisible={true} />
 
-        <footer className="text-center py-10 px-4 border-t border-gray-100 dark:border-gray-800/40">
-          <p className="text-sm text-gray-400 dark:text-gray-500">
+        <footer className="text-center py-10 px-4 border-t border-gray-100 dark:border-gray-800/40 mt-12 block">
+          <Disclaimer />
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-4">
             © 2025 HealthAI · Built with{" "}
             <span className="gradient-text font-semibold">Google Gemini</span> · Not a medical service
           </p>
@@ -300,7 +301,6 @@ export default function App() {
       <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
       <ProfilePanel isOpen={showProfile} onClose={() => setShowProfile(false)} />
       <AdminDashboard isOpen={showAdmin} onClose={() => setShowAdmin(false)} />
-      <Disclaimer />
     </div>
   );
 }

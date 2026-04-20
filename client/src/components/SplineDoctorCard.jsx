@@ -16,11 +16,11 @@ const FEATURES = [
 
 export function SplineDoctorCard() {
   return (
-    <Card className="w-full h-[560px] sm:h-[600px] bg-black/90 relative overflow-hidden border-blue-500/20">
+    <Card className="w-full h-[560px] sm:h-[600px] bg-black/90 relative overflow-hidden border-white/10">
       {/* Dramatic spotlight beam */}
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
-        fill="#3b96f2"
+        fill="#ffffff"
       />
 
       {/* Subtle grid overlay */}
@@ -28,7 +28,7 @@ export function SplineDoctorCard() {
         className="absolute inset-0 pointer-events-none opacity-[0.04]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(59,150,242,1) 1px, transparent 1px), linear-gradient(90deg, rgba(59,150,242,1) 1px, transparent 1px)",
+            "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
@@ -41,9 +41,9 @@ export function SplineDoctorCard() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="inline-flex items-center gap-2 w-fit px-3 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-xs font-semibold text-blue-400 uppercase tracking-widest"
+            className="inline-flex items-center gap-2 w-fit px-3 py-1.5 rounded-full border border-white/20 bg-white/10 text-xs font-bold text-zinc-300 uppercase tracking-widest"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             AI Medical Consultant
           </motion.div>
 
@@ -53,14 +53,14 @@ export function SplineDoctorCard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="text-3xl sm:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-white to-blue-200 leading-tight mb-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400 leading-tight mb-3">
               Meet Your
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 to-zinc-600">
                 AI Doctor
               </span>
             </h2>
-            <p className="text-neutral-400 text-sm leading-relaxed max-w-xs">
+            <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">
               Describe your symptoms. Our AI doctor analyses your condition and
               gives you personalised health insights — in seconds.
             </p>
@@ -79,22 +79,22 @@ export function SplineDoctorCard() {
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.75 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/8 bg-white/5 backdrop-blur-sm"
-                whileHover={{ x: 4, borderColor: "rgba(59,150,242,0.3)", transition: { duration: 0.2 } }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
+                whileHover={{ x: 4, borderColor: "rgba(255,255,255,0.3)", transition: { duration: 0.2 } }}
               >
-                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-4 h-4 text-blue-400" />
+                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-4 h-4 text-white" />
                 </div>
                 <div>
                   <p className="text-white text-xs font-semibold">{label}</p>
-                  <p className="text-neutral-500 text-[0.65rem]">{desc}</p>
+                  <p className="text-zinc-500 text-[10px] uppercase tracking-wide">{desc}</p>
                 </div>
               </motion.div>
             ))}
           </motion.div>
 
           {/* Drag hint */}
-          <p className="text-neutral-600 text-[0.65rem] tracking-wider uppercase">
+          <p className="text-zinc-600 text-[10px] tracking-widest font-bold uppercase mt-2">
             🖱 Drag to interact
           </p>
         </div>
@@ -105,7 +105,7 @@ export function SplineDoctorCard() {
           <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-black/80 to-transparent z-10 pointer-events-none" />
           {/* Glow behind scene */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-48 h-48 rounded-full bg-blue-500/10 blur-3xl" />
+            <div className="w-48 h-48 rounded-full bg-white/5 blur-3xl" />
           </div>
           <SplineScene
             scene={DOCTOR_SCENE}

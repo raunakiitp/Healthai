@@ -1,0 +1,19 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+README.md
+
+# Client ignores
+client/node_modules
+client/dist
+
+# Server ignores
+server/node_modules
+# Exclude local database files so we don't copy local state to production
+# (Cloud run is ephemeral, a cloud database is recommended instead of SQLite)
+server/healthai.db
+server/healthai.db-shm
+server/healthai.db-wal
+server/db/*.db

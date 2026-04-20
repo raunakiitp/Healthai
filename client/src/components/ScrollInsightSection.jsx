@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
+import { Microscope, ShieldCheck, AlertTriangle, AlertOctagon, ListTodo, Home } from "lucide-react";
 
 // Animated counter
 function Counter({ target, suffix = "", duration = 2000 }) {
@@ -52,19 +53,25 @@ export default function ScrollInsightSection({ result }) {
     ? result.risk_level.charAt(0).toUpperCase() + result.risk_level.slice(1)
     : "—";
 
+  const getRiskIcon = (level) => {
+    switch (level) {
+      case "high": return <AlertOctagon className="w-6 h-6 text-red-500 mx-auto" />;
+      case "medium": return <AlertTriangle className="w-6 h-6 text-zinc-400 mx-auto" />;
+      default: return <ShieldCheck className="w-6 h-6 text-white/50 mx-auto" />;
+    }
+  };
+
   return (
     <section
       ref={sectionRef}
-      className="relative py-24 px-4 sm:px-6 overflow-hidden insight-bg"
+      className="relative py-24 px-4 sm:px-6 overflow-hidden bg-black"
     >
       {/* Parallax radial backdrop */}
       <motion.div
         className="absolute inset-0 pointer-events-none will-transform"
         style={{ y: bgY }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[90px] bg-blue-400/5 dark:bg-blue-400/8" />
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-[60px] bg-teal-400/5" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-[60px] bg-indigo-400/5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[90px] bg-white/5" />
       </motion.div>
 
       <motion.div
@@ -79,11 +86,11 @@ export default function ScrollInsightSection({ result }) {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-12"
         >
-          <span className="section-label">Analysis Summary</span>
-          <h2 className="text-3xl sm:text-4xl font-bold mt-2">
-            Your <span className="gradient-text">Health Snapshot</span>
+          <span className="text-[10px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Analysis Summary</span>
+          <h2 className="text-3xl sm:text-4xl font-bold mt-4 text-white">
+            Your <span className="text-zinc-400">Health Snapshot</span>
           </h2>
-          <p className="text-gray-400 dark:text-gray-500 mt-3 text-sm max-w-md mx-auto">
+          <p className="text-zinc-500 mt-3 text-sm max-w-md mx-auto">
             Real-time AI clinical summary — scroll to explore
           </p>
         </motion.div>
@@ -101,17 +108,17 @@ export default function ScrollInsightSection({ result }) {
               key={ecgKey}
               viewBox="0 0 520 100"
               className="w-full ecg-svg"
-              style={{ height: 80, filter: "drop-shadow(0 0 8px rgba(59,150,242,0.6))" }}
+              style={{ height: 80, filter: "drop-shadow(0 0 8px rgba(255,255,255,0.2))" }}
             >
               <defs>
                 <linearGradient id="ecgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%"   stopColor="#3b96f2" stopOpacity="0.2"/>
-                  <stop offset="50%"  stopColor="#14b8a6" stopOpacity="1"/>
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity="0.3"/>
+                  <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.1"/>
+                  <stop offset="50%"  stopColor="#ffffff" stopOpacity="0.8"/>
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1"/>
                 </linearGradient>
               </defs>
               {/* Background baseline */}
-              <line x1="0" y1="50" x2="520" y2="50" stroke="rgba(59,150,242,0.1)" strokeWidth="1" strokeDasharray="4 4"/>
+              <line x1="0" y1="50" x2="520" y2="50" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4 4"/>
               {/* Animated ECG */}
               <path
                 d={ECG_PATH}
@@ -126,7 +133,7 @@ export default function ScrollInsightSection({ result }) {
               {ecgInView && (
                 <motion.circle
                   cx="520" cy="50" r="5"
-                  fill="#14b8a6"
+                  fill="#ffffff"
                   className="ecg-dot"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -140,10 +147,10 @@ export default function ScrollInsightSection({ result }) {
         {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Conditions Found", value: conditionCount, suffix: "", icon: "🔬", delay: 0 },
-            { label: "Risk Level", value: riskLabel, raw: true, icon: result?.risk_level === "high" ? "🔴" : result?.risk_level === "medium" ? "🟡" : "🟢", delay: 0.06 },
-            { label: "Actions Suggested", value: actionCount, suffix: "", icon: "✅", delay: 0.12 },
-            { label: "Home Remedies", value: result?.home_care?.length || 0, suffix: "", icon: "🏠", delay: 0.18 },
+            { label: "Conditions Found", value: conditionCount, suffix: "", icon: <Microscope className="w-6 h-6 text-zinc-400 mx-auto" />, delay: 0 },
+            { label: "Risk Level", value: riskLabel, raw: true, icon: getRiskIcon(result?.risk_level), delay: 0.06 },
+            { label: "Actions Suggested", value: actionCount, suffix: "", icon: <ListTodo className="w-6 h-6 text-zinc-400 mx-auto" />, delay: 0.12 },
+            { label: "Home Remedies", value: result?.home_care?.length || 0, suffix: "", icon: <Home className="w-6 h-6 text-zinc-400 mx-auto" />, delay: 0.18 },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -152,13 +159,13 @@ export default function ScrollInsightSection({ result }) {
               viewport={{ once: false, margin: "-60px" }}
               transition={{ duration: 0.6, delay: stat.delay, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -4, scale: 1.03, transition: { duration: 0.2 } }}
-              className="glass-card p-5 text-center"
+              className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center shadow-xl"
             >
-              <div className="text-2xl mb-2">{stat.icon}</div>
-              <div className="text-3xl font-black gradient-text">
+              <div className="mb-3">{stat.icon}</div>
+              <div className="text-3xl font-black text-white mb-1">
                 {stat.raw ? stat.value : <Counter target={Number(stat.value) || 0} suffix={stat.suffix} />}
               </div>
-              <div className="text-xs text-gray-400 mt-1 font-medium leading-tight">{stat.label}</div>
+              <div className="text-xs text-zinc-500 font-medium leading-tight">{stat.label}</div>
             </motion.div>
           ))}
         </div>
@@ -169,7 +176,7 @@ export default function ScrollInsightSection({ result }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-60px" }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="text-center text-xs text-gray-400 dark:text-gray-500 mt-10 tracking-widest uppercase"
+          className="text-center text-xs text-zinc-600 mt-10 tracking-widest uppercase"
         >
           Powered by Google Gemini · Not a substitute for professional medical advice
         </motion.p>

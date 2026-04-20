@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const { apiLimiter } = require("./middleware/rateLimiter");
 const analyzeRouter = require("./routes/analyze");
@@ -38,20 +39,28 @@ app.get("/health", (req, res) => {
     db: "sqlite",
   });
 });
-
-// 404
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
-});
-
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Something went wrong" });
 });
 
+// Serve frontend in production
+if (process.env.NODE_ENV === "production" || process.env.SERVE_STATIC === "true") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+  
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+  });
+} else {
+  // 404 for dev mode where frontend is separate
+  app.use((req, res) => {
+    res.status(404).json({ error: "Route not found" });
+  });
+}
+
 app.listen(PORT, () => {
-  console.log(`\n🏥 HealthAI Backend running on http://localhost:${PORT}`);
+  console.log(`\n🏥 HealthAI Backend running on port ${PORT}`);
   console.log(`📋 Health check: http://localhost:${PORT}/health`);
   console.log(`🔐 Auth: /api/auth/register | /api/auth/login`);
   console.log(`📂 History: /api/history`);
