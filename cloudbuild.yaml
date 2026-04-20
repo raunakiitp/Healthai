@@ -32,11 +32,10 @@ steps:
       - --platform=managed
       - --allow-unauthenticated
       - --set-env-vars=NODE_ENV=production,DB_PATH=/tmp/healthai.db
-      - --update-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,JWT_SECRET=JWT_SECRET:latest
 
 # Substitution variables — set these in your Cloud Build trigger settings
 substitutions:
-  _VITE_GOOGLE_MAPS_API_KEY: ""  # Override in trigger: AIzaSyCKPkhFw3odFC9m54TOSK-WjRNAyyot7a0
+  _VITE_GOOGLE_MAPS_API_KEY: "AIzaSyBPXVnBiPpZQo37j_a3JZWWXwZgFD-__YY"  # updated Maps key
 
 images:
   - "gcr.io/$PROJECT_ID/healthai:$COMMIT_SHA"
