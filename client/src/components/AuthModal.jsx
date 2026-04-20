@@ -4,7 +4,7 @@ import { X, Mail, Lock, User, Eye, EyeOff, Loader, Activity } from "lucide-react
 import { useAuth } from "../context/AuthContext";
 
 export default function AuthModal({ isOpen, onClose }) {
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const [tab, setTab] = useState("login"); // "login" | "register"
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,26 @@ export default function AuthModal({ isOpen, onClose }) {
         onClose();
       }, 1200);
     } catch (err) {
-      setError(err?.response?.data?.error || "Something went wrong. Please try again.");
+      // Firebase error codes are often in err.code or err.message
+      const msg = err.code ? `Firebase: ${err.code}` : (err?.response?.data?.error || err.message || "Something went wrong.");
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await loginWithGoogle();
+      setSuccess("Successfully signed in with Google!");
+      setTimeout(() => {
+        setSuccess("");
+        onClose();
+      }, 1200);
+    } catch (err) {
+      setError(err.message || "Google sign-in failed.");
     } finally {
       setLoading(false);
     }
@@ -263,6 +282,19 @@ export default function AuthModal({ isOpen, onClose }) {
                     ) : (
                       tab === "login" ? "Sign In to HealthAI" : "Create My Account"
                     )}
+                  </motion.button>
+
+                  <motion.button
+                    type="button"
+                    id="auth-google-btn"
+                    disabled={loading}
+                    onClick={handleGoogleLogin}
+                    whileHover={{ scale: loading ? 1 : 1.02 }}
+                    whileTap={{ scale: loading ? 1 : 0.98 }}
+                    className="w-full py-3 rounded-xl border border-white/10 bg-white/5 text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-all disabled:opacity-60"
+                  >
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" className="w-4 h-4" />
+                    {tab === "login" ? "Sign in with Google" : "Sign up with Google"}
                   </motion.button>
 
                   {/* Guest divider */}

@@ -29,14 +29,13 @@ export async function getSampleCase() {
 }
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
-export async function registerUser({ email, username, password }) {
-  const { data } = await api.post("/api/auth/register", { email, username, password });
-  return data; // { token, user }
-}
-
-export async function loginUser({ email, password }) {
-  const { data } = await api.post("/api/auth/login", { email, password });
-  return data; // { token, user }
+/**
+ * Syncs the Firebase user with the backend database.
+ * Sends the ID token for verification and user record creation/linking.
+ */
+export async function syncFirebaseUser() {
+  const { data } = await api.post("/api/auth/firebase-sync");
+  return data; // { user }
 }
 
 export async function fetchMe() {

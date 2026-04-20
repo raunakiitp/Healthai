@@ -1,7 +1,4 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require("uuid");
 const db = require("../db/database");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -9,88 +6,92 @@ const router = express.Router();
 
 const SAFE_FIELDS = "id, email, username, avatar_color, role, is_banned, last_login, created_at, updated_at";
 
-function signToken(user) {
-  return jwt.sign(
-    { id: user.id, email: user.email, username: user.username, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "30d" }
-  );
-}
-
-// ─── POST /api/auth/register ─────────────────────────────────────────────────
-router.post("/register", async (req, res) => {
+/**
+ * ─── POST /api/auth/firebase-sync ─────────────────────────────────────────────
+ * Syncs a Firebase user with the local SQLite database.
+ * Called by the frontend immediately after a successful Firebase login/signup.
+ * 
+ * Verifies the token via authMiddleware (which attaches req.user).
+ * If the user doesn't exist in SQLite, it creates a new record.
+ */
+router.post("/firebase-sync", authMiddleware, async (req, res) => {
   try {
-    const { email, username, password } = req.body;
-    if (!email || !username || !password)
-      return res.status(400).json({ error: "All fields are required" });
-    if (password.length < 6)
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email))
-      return res.status(400).json({ error: "Invalid email address" });
+    const { id, email, name } = req.user; // Attached by authMiddleware from Firebase token
 
-    const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(email.toLowerCase());
-    if (existing) return res.status(409).json({ error: "Email already registered" });
+    // 1. Check if user exists in local DB
+    let user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const id = uuidv4();
-    db.prepare("INSERT INTO users (id, email, username, password) VALUES (?, ?, ?, ?)")
-      .run(id, email.toLowerCase(), username.trim(), hashedPassword);
+    if (!user) {
+      // 2. If not, check if an old JWT user exists with the same email to link them
+      user = db.prepare("SELECT * FROM users WHERE email = ?").get(email.toLowerCase());
 
-    const newUser = db.prepare(`SELECT ${SAFE_FIELDS} FROM users WHERE id = ?`).get(id);
-    const token = signToken(newUser);
-    res.status(201).json({ token, user: newUser });
-  } catch (err) {
-    console.error("Register error:", err);
-    res.status(500).json({ error: "Server error during registration" });
-  }
-});
+      if (user) {
+        // Link existing record by updating ID to Firebase UID
+        db.prepare("UPDATE users SET id = ?, updated_at = datetime('now') WHERE email = ?")
+          .run(id, email.toLowerCase());
+        console.log(`🔗 Linked existing email ${email} to Firebase UID ${id}`);
+      } else {
+        // Create brand new record
+        db.prepare("INSERT INTO users (id, email, username, password) VALUES (?, ?, ?, ?)")
+          .run(id, email.toLowerCase(), name || email.split('@')[0], "FIREBASE_MANAGED");
+        console.log(`✨ Created new local record for Firebase user: ${email}`);
+      }
+      
+      // Fetch the updated/new user record
+      user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+    }
 
-// ─── POST /api/auth/login ─────────────────────────────────────────────────────
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password)
-      return res.status(400).json({ error: "Email and password are required" });
-
-    const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email.toLowerCase());
-    if (!user) return res.status(401).json({ error: "Invalid email or password" });
-    if (user.is_banned)
+    if (user.is_banned) {
       return res.status(403).json({ error: "This account has been banned. Contact support." });
+    }
 
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ error: "Invalid email or password" });
+    // 3. Update last login
+    db.prepare("UPDATE users SET last_login = datetime('now') WHERE id = ?").run(id);
 
-    db.prepare("UPDATE users SET last_login = datetime('now') WHERE id = ?").run(user.id);
-    const safeUser = db.prepare(`SELECT ${SAFE_FIELDS} FROM users WHERE id = ?`).get(user.id);
-    const token = signToken(safeUser);
-    res.json({ token, user: safeUser });
+    const safeUser = db.prepare(`SELECT ${SAFE_FIELDS} FROM users WHERE id = ?`).get(id);
+    res.json({ user: safeUser });
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: "Server error during login" });
+    console.error("Firebase sync error:", err);
+    res.status(500).json({ error: "Failed to sync user data with server" });
   }
 });
 
-// ─── GET /api/auth/me ─────────────────────────────────────────────────────────
+/**
+ * ─── GET /api/auth/me ─────────────────────────────────────────────────────────
+ * Returns current user's full profile.
+ * Identity is derived from the Firebase ID token in authMiddleware.
+ */
 router.get("/me", authMiddleware, (req, res) => {
-  const user = db.prepare(`SELECT ${SAFE_FIELDS} FROM users WHERE id = ?`).get(req.user.id);
-  if (!user) return res.status(404).json({ error: "User not found" });
-  res.json({ user });
+  try {
+    const user = db.prepare(`SELECT ${SAFE_FIELDS} FROM users WHERE id = ?`).get(req.user.id);
+    if (!user) return res.status(404).json({ error: "User profile not found in database" });
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ error: "Server error fetching profile" });
+  }
 });
 
-// ─── PUT /api/auth/profile ────────────────────────────────────────────────────
+/**
+ * ─── PUT /api/auth/profile ────────────────────────────────────────────────────
+ * Updates username or avatar_color.
+ */
 router.put("/profile", authMiddleware, (req, res) => {
   try {
     const { username, avatar_color } = req.body;
     const updates = [];
     const values = [];
+    
     if (username && username.trim()) { updates.push("username = ?"); values.push(username.trim()); }
     if (avatar_color) { updates.push("avatar_color = ?"); values.push(avatar_color); }
+    
     if (updates.length === 0) return res.status(400).json({ error: "Nothing to update" });
+    
     updates.push("updated_at = datetime('now')");
     values.push(req.user.id);
+    
     db.prepare(`UPDATE users SET ${updates.join(", ")} WHERE id = ?`).run(...values);
     const updated = db.prepare(`SELECT ${SAFE_FIELDS} FROM users WHERE id = ?`).get(req.user.id);
+    
     res.json({ user: updated });
   } catch (err) {
     console.error("Profile update error:", err);
@@ -98,24 +99,13 @@ router.put("/profile", authMiddleware, (req, res) => {
   }
 });
 
-// ─── PUT /api/auth/change-password ───────────────────────────────────────────
-router.put("/change-password", authMiddleware, async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword)
-      return res.status(400).json({ error: "Both fields are required" });
-    if (newPassword.length < 6)
-      return res.status(400).json({ error: "New password must be at least 6 characters" });
-    const user = db.prepare("SELECT * FROM users WHERE id = ?").get(req.user.id);
-    const valid = await bcrypt.compare(currentPassword, user.password);
-    if (!valid) return res.status(401).json({ error: "Current password is incorrect" });
-    const hashed = await bcrypt.hash(newPassword, 12);
-    db.prepare("UPDATE users SET password = ?, updated_at = datetime('now') WHERE id = ?").run(hashed, req.user.id);
-    res.json({ message: "Password changed successfully" });
-  } catch (err) {
-    console.error("Change password error:", err);
-    res.status(500).json({ error: "Could not change password" });
-  }
+// Note: /register, /login, and /change-password are removed as identity is now managed by Firebase.
+// Legacy endpoints return 410 Gone to indicate the migration.
+router.all(["/register", "/login", "/change-password"], (req, res) => {
+  res.status(410).json({ 
+    error: "Legacy authentication is disabled.",
+    message: "This application now uses Firebase Authentication. Please use the /firebase-sync endpoint."
+  });
 });
 
 module.exports = router;

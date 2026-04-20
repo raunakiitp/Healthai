@@ -18,8 +18,29 @@ jest.mock("../services/geminiService", () => ({
   }),
 }));
 
+// ─── Mock Firebase Admin ──────────────────────────────────────────────────────
+jest.mock("../config/firebase-admin", () => ({
+  auth: () => ({
+    verifyIdToken: jest.fn().mockResolvedValue({
+      uid: "test-firebase-uid",
+      email: "test@example.com",
+      name: "Test User"
+    }),
+  }),
+}));
+
 // ─── Mock DB initialization ───────────────────────────────────────────────────
-jest.mock("../db/database", () => ({}));
+jest.mock("../db/database", () => ({
+  prepare: jest.fn().mockReturnValue({
+    get: jest.fn().mockReturnValue({
+      id: "test-firebase-uid",
+      email: "test@example.com",
+      username: "Test User",
+      role: "user"
+    }),
+    run: jest.fn(),
+  }),
+}));
 
 // ─── Mock rate limiter (bypass for tests) ────────────────────────────────────
 jest.mock("../middleware/rateLimiter", () => ({
