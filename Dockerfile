@@ -9,19 +9,25 @@ RUN npm ci
 COPY client/ ./
 RUN npm run build
 
-# ─── Stage 2: Build server + install native deps ──────────────────────────────
-# Use full node:20 (NOT slim) so native modules like better-sqlite3 have all
-# required system libraries (libstdc++, python3, make, g++ for node-gyp, etc.)
+# ─── Stage 2: Server runtime ─────────────────────────────────────────────────
 FROM node:20 AS server-runtime
 
 WORKDIR /app/server
 
+# Install build tools needed to compile better-sqlite3 native addon from source
+# This ensures the binary matches the exact runtime environment
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy package files
 COPY server/package*.json ./
 
-# Install production deps — full image has node-gyp tools so better-sqlite3
-# native bindings compile/load correctly
-RUN npm ci --omit=dev
+# Force rebuild of native addons from source (--build-from-source)
+# This ensures better-sqlite3 binary is compiled for THIS exact environment
+RUN npm ci --omit=dev --build-from-source
 
 # Copy server source
 COPY server/ ./
@@ -29,13 +35,13 @@ COPY server/ ./
 # Copy built React app from Stage 1
 COPY --from=client-builder /app/client/dist /app/client/dist
 
-# Cloud Run sets PORT automatically; default to 8080
+# Cloud Run injects PORT automatically; default to 8080
 ENV PORT=8080
 ENV NODE_ENV=production
-
-# SQLite DB must live in /tmp on Cloud Run (only writable directory)
+# SQLite must write to /tmp on Cloud Run (only writable path)
 ENV DB_PATH=/tmp/healthai.db
 
 EXPOSE 8080
 
+# Use node directly (faster startup, better crash reporting than npm)
 CMD ["node", "app.js"]

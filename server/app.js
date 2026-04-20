@@ -8,8 +8,25 @@ const authRouter = require("./routes/auth");
 const historyRouter = require("./routes/history");
 const adminRouter = require("./routes/admin");
 
+// Crash handler — makes startup errors visible in Cloud Logging
+process.on("uncaughtException", (err) => {
+  console.error("[FATAL] Uncaught exception:", err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("[FATAL] Unhandled rejection:", reason);
+  process.exit(1);
+});
+
 // Initialize DB on startup
-require("./db/database");
+try {
+  require("./db/database");
+  console.log("✅ Database initialized");
+} catch (err) {
+  console.error("[FATAL] Database init failed:", err);
+  process.exit(1);
+}
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
