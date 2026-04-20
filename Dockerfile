@@ -3,6 +3,14 @@ FROM node:20 AS client-builder
 
 WORKDIR /app/client
 
+# Declare build args for Vite — these get baked into the JS bundle at build time
+ARG VITE_GOOGLE_MAPS_API_KEY
+ARG VITE_API_BASE_URL=""
+
+# Expose them as env vars so Vite picks them up during `npm run build`
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 COPY client/package*.json ./
 RUN npm ci
 
@@ -15,21 +23,17 @@ FROM node:20 AS server-runtime
 WORKDIR /app/server
 
 # Install build tools needed to compile better-sqlite3 native addon from source
-# This ensures the binary matches the exact runtime environment
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
 COPY server/package*.json ./
 
-# Force rebuild of native addons from source (--build-from-source)
-# This ensures better-sqlite3 binary is compiled for THIS exact environment
+# Force rebuild of native addons from source so binary matches Cloud Run exactly
 RUN npm ci --omit=dev --build-from-source
 
-# Copy server source
 COPY server/ ./
 
 # Copy built React app from Stage 1
@@ -43,5 +47,4 @@ ENV DB_PATH=/tmp/healthai.db
 
 EXPOSE 8080
 
-# Use node directly (faster startup, better crash reporting than npm)
 CMD ["node", "app.js"]

@@ -1,0 +1,46 @@
+steps:
+  # Step 1: Build Docker image with Vite env vars injected as build args
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - build
+      - --build-arg
+      - "VITE_GOOGLE_MAPS_API_KEY=${_VITE_GOOGLE_MAPS_API_KEY}"
+      - --build-arg
+      - "VITE_API_BASE_URL="
+      - -t
+      - "gcr.io/$PROJECT_ID/healthai:$COMMIT_SHA"
+      - -t
+      - "gcr.io/$PROJECT_ID/healthai:latest"
+      - .
+
+  # Step 2: Push image to Google Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - push
+      - "gcr.io/$PROJECT_ID/healthai:$COMMIT_SHA"
+
+  # Step 3: Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: gcloud
+    args:
+      - run
+      - services
+      - update
+      - healthai
+      - --image=gcr.io/$PROJECT_ID/healthai:$COMMIT_SHA
+      - --region=us-central1
+      - --platform=managed
+      - --allow-unauthenticated
+      - --set-env-vars=NODE_ENV=production,DB_PATH=/tmp/healthai.db
+      - --update-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,JWT_SECRET=JWT_SECRET:latest
+
+# Substitution variables — set these in your Cloud Build trigger settings
+substitutions:
+  _VITE_GOOGLE_MAPS_API_KEY: ""  # Override in trigger: AIzaSyCKPkhFw3odFC9m54TOSK-WjRNAyyot7a0
+
+images:
+  - "gcr.io/$PROJECT_ID/healthai:$COMMIT_SHA"
+  - "gcr.io/$PROJECT_ID/healthai:latest"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
