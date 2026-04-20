@@ -1,0 +1,69 @@
+{
+  "hackathon": "Google Antigravity Challenge",
+  "submission_attempt": 2,
+  "team": "raunakiitp",
+
+  "vertical": "Healthcare",
+  "persona": "Smart Medical Symptom Assistant",
+
+  "problem_statement": {
+    "identified_gap": "Millions of people face barriers to quick healthcare access — long waits, high costs, and limited information about whether their symptoms require emergency care or home management.",
+    "solution": "HealthAI is an AI-powered first-response wellness companion that lets users describe symptoms in plain language, then intelligently analyses them, assesses risk level (Low / Moderate / High), provides personalised guidance, and directs users to the nearest clinics — all within seconds.",
+    "target_users": ["General public", "Rural populations with limited clinic access", "First-time patients unsure of symptom severity"],
+    "impact": "Reduces unnecessary emergency room visits for low-risk symptoms and ensures high-risk symptoms are escalated immediately with clear emergency guidance."
+  },
+
+  "google_services": [
+    {
+      "service": "Google Gemini 2.5 Flash",
+      "package": "@google/generative-ai",
+      "usage": "Core AI engine — structured symptom analysis, risk classification (Low/Medium/High), differential diagnosis, emergency detection, and personalised home-care advice",
+      "file": "server/services/geminiService.js"
+    },
+    {
+      "service": "Google Maps JavaScript API",
+      "usage": "Interactive map rendered after analysis to show nearby hospitals and clinics within 5 km of user's geolocation",
+      "file": "client/src/components/MapSection.jsx"
+    },
+    {
+      "service": "Google Places API",
+      "usage": "Fetches nearby healthcare facilities (hospitals, clinics, urgent care) based on user's current coordinates",
+      "file": "client/src/components/MapSection.jsx"
+    },
+    {
+      "service": "Google Cloud Natural Language API",
+      "usage": "Extracts recognized medical entities from free-text symptom input to enrich the Gemini analysis prompt with structured entity context",
+      "file": "server/services/googleHealthKnowledge.js"
+    },
+    {
+      "service": "Google Cloud Run",
+      "usage": "Serverless container hosting for the full-stack application (React frontend + Node.js backend in a single Docker container)",
+      "file": "Dockerfile"
+    },
+    {
+      "service": "Google Cloud Build",
+      "usage": "CI/CD pipeline — automatically builds Docker image and deploys to Cloud Run on every git push to main",
+      "file": "cloudbuild.yaml"
+    }
+  ],
+
+  "tech_stack": {
+    "frontend": ["React 19", "Vite", "Tailwind CSS", "Framer Motion", "Three.js"],
+    "backend": ["Node.js", "Express 5", "SQLite (better-sqlite3)"],
+    "auth": ["JWT", "bcrypt"],
+    "testing": ["Jest", "Supertest"],
+    "devops": ["Docker", "Google Cloud Run", "Google Cloud Build"]
+  },
+
+  "evaluation_areas": {
+    "code_quality": "Modular component architecture, separation of concerns (routes/services/middleware), consistent code style",
+    "security": "JWT auth, bcrypt hashing, helmet HTTP headers, CORS allowlist, rate limiting, input sanitization",
+    "efficiency": "Vite build optimisation, Cloud Run auto-scaling, SQLite for low-latency local queries",
+    "testing": "Jest unit tests for business logic + Supertest integration tests for all API routes",
+    "accessibility": "ARIA labels, roles, live regions, keyboard navigation, focus management, skip navigation",
+    "google_services": "Gemini AI (core), Maps + Places (location), Natural Language API (NLP), Cloud Run + Build (hosting/CI-CD)"
+  },
+
+  "repository": "https://github.com/raunakiitp/Healthai",
+  "branch": "main"
+}

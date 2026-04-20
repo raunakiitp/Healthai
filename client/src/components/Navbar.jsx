@@ -21,6 +21,8 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
+      role="navigation"
+      aria-label="Main navigation"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-black/60 backdrop-blur-xl border-b border-white/10 py-3" : "bg-transparent py-5"
       }`}
@@ -48,9 +50,10 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
               whileTap={{ scale: 0.95 }}
               onClick={onOpenAdmin}
               id="nav-admin-btn"
+              aria-label="Open admin dashboard"
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all"
             >
-              <Shield className="w-4 h-4" />
+              <Shield className="w-4 h-4" aria-hidden="true" />
               Admin
             </motion.button>
           )}
@@ -62,11 +65,12 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
             onClick={onOpenHistory}
             className="flex items-center gap-2 text-sm relative text-zinc-300 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors"
             id="nav-history-btn"
+            aria-label={`View analysis history${historyCount > 0 ? `, ${historyCount} item${historyCount > 1 ? 's' : ''}` : ''}`}
           >
-            <History className="w-4 h-4" />
+            <History className="w-4 h-4" aria-hidden="true" />
             History
             {historyCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-white text-black text-[0.6rem] font-bold rounded-full flex items-center justify-center">
+              <span aria-hidden="true" className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-white text-black text-[0.6rem] font-bold rounded-full flex items-center justify-center">
                 {historyCount > 9 ? "9+" : historyCount}
               </span>
             )}
@@ -104,6 +108,8 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
             whileTap={{ scale: 0.9 }}
             onClick={onToggleDark}
             id="dark-mode-toggle"
+            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            aria-pressed={darkMode}
             className="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <AnimatePresence mode="wait">
@@ -114,15 +120,21 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
                 exit={{ rotate: 90, opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {darkMode ? <Sun className="w-5 h-5" aria-hidden="true" /> : <Moon className="w-5 h-5" aria-hidden="true" />}
               </motion.div>
             </AnimatePresence>
           </motion.button>
         </div>
 
         {/* Mobile hamburger */}
-        <button className="sm:hidden p-2 rounded-lg text-zinc-400 hover:text-white" onClick={() => setMobileMenu(!mobileMenu)}>
-          {mobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        <button
+          className="sm:hidden p-2 rounded-lg text-zinc-400 hover:text-white"
+          onClick={() => setMobileMenu(!mobileMenu)}
+          aria-label={mobileMenu ? "Close menu" : "Open menu"}
+          aria-expanded={mobileMenu}
+          aria-controls="mobile-menu"
+        >
+          {mobileMenu ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
         </button>
       </div>
 
@@ -130,6 +142,9 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
       <AnimatePresence>
         {mobileMenu && (
           <motion.div
+            id="mobile-menu"
+            role="menu"
+            aria-label="Mobile navigation menu"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

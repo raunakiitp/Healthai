@@ -63,6 +63,10 @@ export default function ResultsDashboard({ result, isVisible }) {
       {isVisible && (
         <motion.section
           id="results-dashboard"
+          role="region"
+          aria-labelledby="results-heading"
+          aria-live="polite"
+          aria-atomic="false"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
@@ -78,7 +82,7 @@ export default function ResultsDashboard({ result, isVisible }) {
               className="text-center mb-8"
             >
               <span className="text-[10px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">AI Results</span>
-              <h2 className="text-3xl sm:text-4xl font-bold mt-4 text-white">
+              <h2 id="results-heading" className="text-3xl sm:text-4xl font-bold mt-4 text-white">
                 Your <span className="text-zinc-400">Health Analysis</span>
               </h2>
             </motion.div>
@@ -87,6 +91,9 @@ export default function ResultsDashboard({ result, isVisible }) {
             <AnimatePresence>
               {result.emergency && (
                 <motion.div
+                  role="alert"
+                  aria-live="assertive"
+                  aria-atomic="true"
                   initial={{ scale: 0.88, opacity: 0, y: 20 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -132,11 +139,15 @@ export default function ResultsDashboard({ result, isVisible }) {
                 >
                   <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest block mb-4">Risk Assessment</span>
                   <div className="flex items-center gap-4">
-                    <div className="p-2 border border-white/5 rounded-xl bg-white/5">
+                    <div className="p-2 border border-white/5 rounded-xl bg-white/5" aria-hidden="true">
                       {risk.icon}
                     </div>
                     <div>
-                      <div className={`text-2xl font-bold ${risk.className}`}>
+                      <div
+                        className={`text-2xl font-bold ${risk.className}`}
+                        aria-label={`Risk level: ${risk.label}`}
+                        role="status"
+                      >
                         {risk.label}
                       </div>
                       <p className="text-sm text-zinc-500 mt-1">{risk.description}</p>
@@ -187,6 +198,7 @@ export default function ResultsDashboard({ result, isVisible }) {
                       </span>
                     </div>
                     <ProbabilityBar probability={cond.probability || 0} index={i} />
+                    <span className="sr-only">{Math.round((cond.probability || 0) * 100)}% probability</span>
                     {cond.description && (
                        <div className="pl-9 mt-2">
                          <p className="text-xs text-zinc-500 leading-relaxed max-w-xl">

@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const helmet = require("helmet");
 const { apiLimiter } = require("./middleware/rateLimiter");
 const analyzeRouter = require("./routes/analyze");
 const authRouter = require("./routes/auth");
@@ -27,14 +28,65 @@ try {
   process.exit(1);
 }
 
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
-app.use(cors({ origin: "*" }));
+// ─── Security: CORS allowlist (env-driven in production) ─────────────────────
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : ["http://localhost:5173", "http://localhost:3000"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow no-origin requests (Postman, curl, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS blocked: ${origin} not in allowlist`));
+    },
+    credentials: true,
+  })
+);
+
+// ─── Security: HTTP security headers via helmet ───────────────────────────────
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // CSP managed by frontend build
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// ─── Security: Input sanitization middleware ──────────────────────────────────
+// Strips HTML tags and script injection attempts from string fields
+app.use((req, res, next) => {
+  const sanitizeString = (str) => {
+    if (typeof str !== "string") return str;
+    return str
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+      .replace(/<[^>]+>/g, "")
+      .replace(/javascript:/gi, "")
+      .replace(/on\w+\s*=/gi, "");
+  };
+
+  const sanitizeObject = (obj) => {
+    if (typeof obj === "string") return sanitizeString(obj);
+    if (Array.isArray(obj)) return obj.map(sanitizeObject);
+    if (obj && typeof obj === "object") {
+      return Object.fromEntries(
+        Object.entries(obj).map(([k, v]) => [k, sanitizeObject(v)])
+      );
+    }
+    return obj;
+  };
+
+  if (req.body) req.body = sanitizeObject(req.body);
+  next();
+});
 
 // Trust proxy (required for rate limiting behind Cloud Run / GCP Load Balancer)
 app.set("trust proxy", 1);
@@ -57,6 +109,7 @@ app.get("/health", (req, res) => {
     gemini: process.env.GEMINI_API_KEY ? "configured" : "missing - add to .env",
     auth: "enabled",
     db: "sqlite",
+    security: "helmet + cors-allowlist + input-sanitization + rate-limit",
   });
 });
 
@@ -75,13 +128,17 @@ app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
-app.listen(PORT, () => {
-  console.log(`\n🏥 HealthAI Backend running on port ${PORT}`);
-  console.log(`📋 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔐 Auth: /api/auth/register | /api/auth/login`);
-  console.log(`📂 History: /api/history`);
-  console.log(`👑 Admin panel: /api/admin (admin@healthai.com / admin@123)`);
-  console.log(
-    `🤖 Gemini API: ${process.env.GEMINI_API_KEY ? "✅ Configured" : "❌ Missing key in .env"}\n`
-  );
-});
+// Only listen when not in test environment
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`\n🏥 HealthAI Backend running on port ${PORT}`);
+    console.log(`📋 Health check: http://localhost:${PORT}/health`);
+    console.log(`🔐 Auth: /api/auth/register | /api/auth/login`);
+    console.log(`📂 History: /api/history`);
+    console.log(`👑 Admin panel: /api/admin`);
+    console.log(`🤖 Gemini API: ${process.env.GEMINI_API_KEY ? "✅ Configured" : "❌ Missing key in .env"}`);
+    console.log(`🛡️ Security: helmet + CORS allowlist + input sanitization + rate limiting\n`);
+  });
+}
+
+module.exports = app;

@@ -1,8 +1,40 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+/**
+ * Google Gemini AI — Symptom Analysis Service
+ *
+ * Vertical: Healthcare — Smart Symptom Assistant
+ *
+ * Google Services Used:
+ *  1. Google Gemini 2.5 Flash  (@google/generative-ai)
+ *     → Core AI engine for symptom analysis, risk classification,
+ *       differential diagnosis, and emergency detection.
+ *  2. Google Cloud Natural Language API (via googleHealthKnowledge.js)
+ *     → Extracts medical entities from free-text input to enrich the prompt.
+ *
+ * Logic flow:
+ *  a) Apply deterministic rule-based emergency overrides FIRST
+ *     (chest pain + high severity, stroke symptoms, breathing + high severity)
+ *  b) Enrich symptom list using NLP entity extraction (Google NL API)
+ *  c) Build structured Gemini prompt with patient context
+ *  d) Parse and validate Gemini JSON response
+ *  e) Apply rule overrides on parsed result
+ *  f) Return structured analysis or a graceful fallback on error
+ */
 
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { buildEnrichedContext } = require("./googleHealthKnowledge");
+
+// ─── Google Gemini client ─────────────────────────────────────────────────────
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Rule-based emergency override
+/**
+ * Rule-based emergency override (deterministic safety layer).
+ * Called BEFORE and AFTER Gemini to ensure critical symptoms
+ * are never underclassified by the AI.
+ *
+ * @param {string[]} symptoms
+ * @param {number} severity  1–10
+ * @returns {{ emergency: boolean, risk_level: string } | null}
+ */
 function applyRuleBasedFallback(symptoms, severity) {
   const symLower = symptoms.map((s) => s.toLowerCase());
   const hasChestPain = symLower.some((s) => s.includes("chest"));
@@ -17,26 +49,50 @@ function applyRuleBasedFallback(symptoms, severity) {
       s.includes("arm weakness")
   );
 
+  // High-severity chest pain, breathing difficulty, or stroke symptoms → emergency
   if ((hasChestPain || hasBreathing || hasStroke) && severity >= 7) {
     return { emergency: true, risk_level: "high" };
   }
+  // Low-severity fever → explicitly low risk
   if (hasFever && severity <= 4) {
     return { emergency: false, risk_level: "low" };
   }
   return null;
 }
 
+/**
+ * Analyses patient symptoms using:
+ *  1. Rule-based safety override
+ *  2. Google Cloud Natural Language API (entity enrichment)
+ *  3. Google Gemini 2.5 Flash (AI analysis)
+ *
+ * @param {{ symptoms: string[], severity: number, duration: string, age: string|number, gender: string, freeText: string }} params
+ * @returns {Promise<object>} Structured analysis result
+ */
 async function analyzeSymptoms({ symptoms, severity, duration, age, gender, freeText }) {
   const symptomList = [...symptoms];
   if (freeText && freeText.trim()) {
     symptomList.push(freeText.trim());
   }
 
+  // Step 1: Deterministic rule check
   const ruleOverride = applyRuleBasedFallback(symptomList, severity);
 
-  const prompt = `You are a medical AI assistant. A patient has provided the following information:
-  
-- Symptoms: ${symptomList.join(", ")}
+  // Step 2: Enrich symptom context using Google Cloud Natural Language API
+  // This extracts additional medical entities from free-text input
+  let enrichedContext;
+  try {
+    enrichedContext = await buildEnrichedContext(symptoms, freeText || "");
+  } catch {
+    // NL API enrichment is non-critical — fall back to raw symptom list
+    enrichedContext = symptomList.join(", ");
+  }
+
+  // Step 3: Build Gemini prompt with full patient context
+  const prompt = `You are a medical AI assistant helping patients understand their symptoms.
+
+A patient has provided the following information:
+- Symptoms (with AI-extracted medical entities): ${enrichedContext}
 - Severity (1-10): ${severity}
 - Duration: ${duration}
 - Age: ${age}
@@ -70,6 +126,7 @@ Rules:
 - Respond ONLY with the JSON object, no markdown, no preamble`;
 
   try {
+    // Step 4: Call Google Gemini 2.5 Flash
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();
@@ -78,7 +135,7 @@ Rules:
     const cleaned = text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    // Apply rule-based override if applicable
+    // Step 5: Apply rule-based override on Gemini result
     if (ruleOverride) {
       parsed.emergency = ruleOverride.emergency;
       parsed.risk_level = ruleOverride.risk_level;
@@ -92,7 +149,7 @@ Rules:
   } catch (err) {
     console.error("Gemini API error:", err.message);
 
-    // Fallback response if Gemini fails
+    // Step 6: Graceful fallback — always return a usable response
     const isSevere = severity >= 7;
     return {
       conditions: [

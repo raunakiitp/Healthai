@@ -69,7 +69,13 @@ export default function AuthModal({ isOpen, onClose }) {
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
-            <div className="pointer-events-auto w-full max-w-md">
+            <div
+              className="pointer-events-auto w-full max-w-md"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="auth-modal-title"
+              aria-describedby="auth-modal-desc"
+            >
               <div className="relative bg-black rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
                 
                 {/* Header separator */}
@@ -82,16 +88,17 @@ export default function AuthModal({ isOpen, onClose }) {
                       <Activity className="w-5 h-5 text-black" strokeWidth={2.5} />
                     </div>
                     <div>
-                      <h2 className="font-bold text-white text-lg leading-tight">HealthAI</h2>
-                      <p className="text-xs text-zinc-500 leading-none">Smart Symptom Assistant</p>
+                      <h2 id="auth-modal-title" className="font-bold text-white text-lg leading-tight">HealthAI</h2>
+                      <p id="auth-modal-desc" className="text-xs text-zinc-500 leading-none">Smart Symptom Assistant</p>
                     </div>
                   </div>
                   <button
                     onClick={onClose}
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 transition-colors"
                     id="auth-modal-close"
+                    aria-label="Close sign in dialog"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
 
@@ -103,6 +110,9 @@ export default function AuthModal({ isOpen, onClose }) {
                         key={t}
                         onClick={() => switchTab(t)}
                         id={`auth-tab-${t}`}
+                        role="tab"
+                        aria-selected={tab === t}
+                        aria-controls={`auth-panel-${t}`}
                         className={`relative flex-1 py-2 text-sm font-bold rounded-lg transition-colors duration-200 z-10 ${
                           tab === t
                             ? "text-black"
@@ -125,7 +135,13 @@ export default function AuthModal({ isOpen, onClose }) {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
+                <form
+                  onSubmit={handleSubmit}
+                  id={`auth-panel-${tab}`}
+                  role="tabpanel"
+                  aria-labelledby={`auth-tab-${tab}`}
+                  className="px-6 pb-6 space-y-4"
+                >
                   <AnimatePresence mode="wait">
                     {tab === "register" && (
                       <motion.div
@@ -205,12 +221,15 @@ export default function AuthModal({ isOpen, onClose }) {
                   <AnimatePresence>
                     {error && (
                       <motion.div
+                        role="alert"
+                        aria-live="assertive"
+                        id="auth-error-msg"
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         className="flex items-center gap-2 p-3 rounded-xl bg-red-950/40 border border-red-500/20 text-red-400 text-sm"
                       >
-                        <span className="text-red-500">⚠</span>
+                        <span aria-hidden="true" className="text-red-500">⚠</span>
                         {error}
                       </motion.div>
                     )}

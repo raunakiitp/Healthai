@@ -82,7 +82,7 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
   const severityInfo = getSeverityLabel(severity);
 
   return (
-    <section ref={sectionRef} id="symptom-panel" className="py-16 px-4 sm:px-6 bg-black">
+    <section ref={sectionRef} id="symptom-panel" aria-labelledby="symptom-panel-heading" className="py-16 px-4 sm:px-6 bg-black">
       <div className="max-w-4xl mx-auto">
 
         {/* Section header — scroll-reveals with perspective */}
@@ -91,7 +91,7 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
           className="text-center mb-10 will-transform"
         >
           <span className="text-[10px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Step 2</span>
-          <h2 className="text-3xl sm:text-4xl font-bold mt-4 mb-3 text-white">
+          <h2 id="symptom-panel-heading" className="text-3xl sm:text-4xl font-bold mt-4 mb-3 text-white">
             Describe Your <span className="text-zinc-400">Symptoms</span>
           </h2>
           <p className="text-zinc-500 max-w-lg mx-auto">
@@ -101,8 +101,8 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
 
         <div className="space-y-6">
           {/* ── Symptom Tags — staggered float-up ── */}
-          <ScrollCard delay={0} className="p-6">
-            <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+          <ScrollCard delay={0} className="p-6" role="group" aria-labelledby="symptoms-heading">
+            <h3 id="symptoms-heading" className="font-semibold text-white mb-4 flex items-center gap-2">
               <Stethoscope className="w-5 h-5 text-zinc-400" />
               Select Symptoms
               {symptoms.length > 0 && (
@@ -127,6 +127,8 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.94 }}
                   onClick={() => toggleSymptom(sym.label)}
+                  aria-pressed={symptoms.includes(sym.label)}
+                  aria-label={`${sym.label}${symptoms.includes(sym.label) ? ', selected' : ''}`}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                     symptoms.includes(sym.label)
                       ? "bg-white text-black border-white"
@@ -171,6 +173,11 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
                 min="1" max="10"
                 value={severity}
                 onChange={(e) => onChange({ severity: Number(e.target.value) })}
+                aria-label={`Symptom severity: ${severity} out of 10 — ${severityInfo.label}`}
+                aria-valuemin={1}
+                aria-valuemax={10}
+                aria-valuenow={severity}
+                aria-valuetext={`${severity} — ${severityInfo.label}`}
                 style={{
                   background: `linear-gradient(to right, ${severityInfo.color} 0%, ${severityInfo.color} ${(severity - 1) * 11.11}%, #27272a ${(severity - 1) * 11.11}%, #27272a 100%)`, // zinc-800
                 }}
@@ -235,12 +242,15 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
                     <label className="flex items-center gap-2 font-semibold text-zinc-300 text-sm mb-3">
                       <Users className="w-4 h-4 text-zinc-400" /> Gender
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" role="group" aria-labelledby="gender-label">
+                      <span id="gender-label" className="sr-only">Select gender</span>
                       {["Male", "Female", "Other"].map((g) => (
                         <button
                           key={g}
                           id={`gender-${g.toLowerCase()}`}
                           onClick={() => onChange({ gender: g.toLowerCase() })}
+                          aria-pressed={gender === g.toLowerCase()}
+                          aria-label={`Gender: ${g}`}
                           className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border ${
                             gender === g.toLowerCase()
                               ? "bg-white text-black border-white shadow-md"
@@ -275,6 +285,8 @@ export default function SymptomPanel({ formData, onChange, onAnalyze, isLoading 
               onClick={onAnalyze}
               disabled={isLoading || (symptoms.length === 0 && !formData.freeText)}
               id="panel-analyze-btn"
+              aria-label={isLoading ? 'Analyzing symptoms, please wait' : 'Run AI analysis of your symptoms'}
+              aria-busy={isLoading}
               className="font-medium text-black bg-white hover:bg-zinc-200 transition-all text-base px-8 py-3.5 rounded-xl inline-flex items-center gap-3 disabled:opacity-50"
             >
               {isLoading ? (
