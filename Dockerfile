@@ -1,5 +1,5 @@
 # Stage 1: Build the React client
-FROM node:18 AS client-builder
+FROM node:20 AS client-builder
 
 WORKDIR /app/client
 
@@ -12,7 +12,7 @@ COPY client/ ./
 RUN npm run build
 
 # Stage 2: Build the Node.js backend
-FROM node:18-slim AS server-runtime
+FROM node:20-slim AS server-runtime
 
 WORKDIR /app/server
 
