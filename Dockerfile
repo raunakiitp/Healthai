@@ -1,41 +1,41 @@
-# Stage 1: Build the React client
+# ─── Stage 1: Build React client ─────────────────────────────────────────────
 FROM node:20 AS client-builder
 
 WORKDIR /app/client
 
-# Copy package files and install dependencies
 COPY client/package*.json ./
 RUN npm ci
 
-# Copy client source and build
 COPY client/ ./
 RUN npm run build
 
-# Stage 2: Build the Node.js backend
-FROM node:20-slim AS server-runtime
+# ─── Stage 2: Build server + install native deps ──────────────────────────────
+# Use full node:20 (NOT slim) so native modules like better-sqlite3 have all
+# required system libraries (libstdc++, python3, make, g++ for node-gyp, etc.)
+FROM node:20 AS server-runtime
 
 WORKDIR /app/server
 
-# Copy server package files and install production dependencies
+# Copy package files
 COPY server/package*.json ./
-# Use npm ci for clean deterministic install
+
+# Install production deps — full image has node-gyp tools so better-sqlite3
+# native bindings compile/load correctly
 RUN npm ci --omit=dev
 
-# Copy server source code
+# Copy server source
 COPY server/ ./
 
-# Copy the built React app from the previous stage
+# Copy built React app from Stage 1
 COPY --from=client-builder /app/client/dist /app/client/dist
 
-# Setup user for security (optional but recommended)
-# We don't use 'USER node' if sqlite needs to write to an existing db file, but 
-# since Cloud Run will use ephemeral storage, the container runs as the default user or specified one.
-
-# Environment variables for production
-ENV NODE_ENV=production
-# Expose the standard port (Cloud Run sets PORT automatically, defaults to 8080)
+# Cloud Run sets PORT automatically; default to 8080
 ENV PORT=8080
+ENV NODE_ENV=production
+
+# SQLite DB must live in /tmp on Cloud Run (only writable directory)
+ENV DB_PATH=/tmp/healthai.db
+
 EXPOSE 8080
 
-# Start the server
-CMD ["npm", "start"]
+CMD ["node", "app.js"]
