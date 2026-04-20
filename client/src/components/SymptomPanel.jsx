@@ -51,6 +51,7 @@ function ScrollCard({ children, delay = 0, className = "", tiltDir = 1, ...rest 
         duration: 0.7,
         delay,
         ease: [0.16, 1, 0.3, 1],
+      }}
       className={`relative rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 shadow-xl ${className}`}
       {...rest}
     >
