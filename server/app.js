@@ -70,7 +70,8 @@ app.use((err, req, res, next) => {
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // Catch-all: serve React app for any non-API route (client-side routing)
-app.get("*", (req, res) => {
+// NOTE: Express v5 no longer supports bare "*" — must use regex
+app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
