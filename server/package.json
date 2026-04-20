@@ -9,7 +9,12 @@
     "test": "jest --runInBand --forceExit",
     "test:coverage": "jest --runInBand --forceExit --coverage"
   },
-  "keywords": ["healthai", "gemini", "healthcare", "symptom-analysis"],
+  "keywords": [
+    "healthai",
+    "gemini",
+    "healthcare",
+    "symptom-analysis"
+  ],
   "author": "raunakiitp",
   "license": "MIT",
   "type": "commonjs",
@@ -21,6 +26,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
+    "firebase-admin": "^13.8.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.3",
     "uuid": "^13.0.0"
@@ -31,8 +37,12 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.js"],
-    "testPathIgnorePatterns": ["/node_modules/"],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
     "collectCoverageFrom": [
       "routes/**/*.js",
       "services/**/*.js",
