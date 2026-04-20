@@ -42,8 +42,10 @@ export function SplineDoctorCard() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
             className="inline-flex items-center gap-2 w-fit px-3 py-1.5 rounded-full border border-white/20 bg-white/10 text-xs font-bold text-zinc-300 uppercase tracking-widest"
+            role="status"
+            aria-label="AI Medical Consultant Online"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             AI Medical Consultant
           </motion.div>
 
@@ -83,7 +85,7 @@ export function SplineDoctorCard() {
                 whileHover={{ x: 4, borderColor: "rgba(255,255,255,0.3)", transition: { duration: 0.2 } }}
               >
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-4 h-4 text-white" />
+                  <Icon aria-hidden="true" className="w-4 h-4 text-white" />
                 </div>
                 <div>
                   <p className="text-white text-xs font-semibold">{label}</p>
@@ -110,6 +112,8 @@ export function SplineDoctorCard() {
           <SplineScene
             scene={DOCTOR_SCENE}
             className="w-full h-full"
+            role="img"
+            aria-label="Interactive 3D AI Doctor Avatar"
           />
         </div>
       </div>

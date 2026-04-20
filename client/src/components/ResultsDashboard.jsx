@@ -99,7 +99,7 @@ export default function ResultsDashboard({ result, isVisible }) {
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                   className="p-6 flex items-start gap-4 rounded-2xl bg-red-950/20 border border-red-500/20"
                 >
-                  <Activity className="w-8 h-8 text-red-500 flex-shrink-0 animate-pulse mt-1" />
+                  <Activity aria-hidden="true" className="w-8 h-8 text-red-500 flex-shrink-0 animate-pulse mt-1" />
                   <div>
                     <h3 className="text-xl font-bold text-red-400 mb-2">
                       Emergency Alert — Seek Immediate Care
@@ -109,9 +109,9 @@ export default function ResultsDashboard({ result, isVisible }) {
                       <strong className="text-red-300">immediate medical attention</strong>. Do not wait.
                     </p>
                     <a href="tel:911"
-                      className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 px-5 py-2 rounded-xl font-medium text-sm hover:bg-red-500/20 transition-colors"
+                      className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 px-5 py-2 rounded-xl font-medium text-sm hover:bg-red-500/20 transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500 focus-visible:ring-offset-black"
                     >
-                      <Phone className="w-4 h-4" />
+                      <Phone aria-hidden="true" className="w-4 h-4" />
                       Call Emergency (911)
                     </a>
                   </div>
@@ -160,7 +160,7 @@ export default function ResultsDashboard({ result, isVisible }) {
               <DepthCard delay={0.08} className="p-6">
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest block mb-4">See a Doctor When</span>
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-zinc-400 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle aria-hidden="true" className="w-5 h-5 text-zinc-400 flex-shrink-0 mt-0.5" />
                   <p className="text-zinc-300 text-sm leading-relaxed font-medium">
                     {result.see_doctor_when || "If symptoms worsen, persist beyond 48 hours, or new symptoms develop."}
                   </p>
@@ -172,7 +172,7 @@ export default function ResultsDashboard({ result, isVisible }) {
             <DepthCard delay={0} className="p-6">
               <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest block">Analysis</span>
               <h3 className="font-semibold text-white mt-1 mb-6 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-zinc-400" />
+                <Activity aria-hidden="true" className="w-5 h-5 text-zinc-400" />
                 Possible Conditions
               </h3>
               <div className="space-y-6">
@@ -215,7 +215,7 @@ export default function ResultsDashboard({ result, isVisible }) {
             <DepthCard delay={0.06} className="p-6">
               <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest block">Plan</span>
               <h3 className="font-semibold text-white mt-1 mb-5 flex items-center gap-2">
-                <ListTodo className="w-5 h-5 text-zinc-400" />
+                <ListTodo aria-hidden="true" className="w-5 h-5 text-zinc-400" />
                 Recommended Actions
               </h3>
               <div className="space-y-3">
@@ -229,7 +229,7 @@ export default function ResultsDashboard({ result, isVisible }) {
                     className="flex items-start gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10"
                     whileHover={{ x: 4, transition: { duration: 0.2 } }}
                   >
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                    <CheckCircle aria-hidden="true" className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-zinc-300 leading-relaxed font-medium">{action}</span>
                   </motion.div>
                 ))}
@@ -241,7 +241,7 @@ export default function ResultsDashboard({ result, isVisible }) {
               <DepthCard delay={0.1} className="p-6">
                 <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest block">Treatment</span>
                 <h3 className="font-semibold text-white mt-1 mb-5 flex items-center gap-2">
-                  <Home className="w-5 h-5 text-zinc-400" />
+                  <Home aria-hidden="true" className="w-5 h-5 text-zinc-400" />
                   Home Care Tips
                 </h3>
                 <div className="grid sm:grid-cols-2 gap-3">
@@ -255,7 +255,7 @@ export default function ResultsDashboard({ result, isVisible }) {
                       className="flex items-center gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10"
                       whileHover={{ scale: 1.02, y: -2, transition: { duration: 0.2 } }}
                     >
-                      <HeartHandshake className="w-4 h-4 text-zinc-400 flex-shrink-0" />
+                      <HeartHandshake aria-hidden="true" className="w-4 h-4 text-zinc-400 flex-shrink-0" />
                       <span className="text-sm text-zinc-300 font-medium">{tip}</span>
                     </motion.div>
                   ))}

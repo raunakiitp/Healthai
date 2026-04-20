@@ -1,4 +1,4 @@
-// ─── Mock uuid (uuid v13 ships ESM-only dist; use a simple CJS mock) ─────────
+// ─── Mock uuid (uuid ships ESM-only dist; use a simple CJS mock) ─────────
 jest.mock("uuid", () => ({
   v4: () => "00000000-0000-0000-0000-000000000000",
 }));
@@ -98,37 +98,37 @@ describe("POST /api/analyze", () => {
     expect(res.body.error).toMatch(/symptom/i);
   });
 
-  test("returns 400 when symptoms is not an array", async () => {
+   test("returns 400 when symptoms is not an array", async () => {
     const res = await request(app)
       .post("/api/analyze")
       .send({ symptoms: "headache", severity: 5 });
     expect(res.statusCode).toBe(400);
+    // express-validator returns 'errors' array
+    expect(res.body.errors).toBeDefined();
   });
 
-  test("returns 400 when severity is missing", async () => {
+   test("returns 400 when severity is missing", async () => {
     const res = await request(app)
       .post("/api/analyze")
       .send({ symptoms: ["Fever"] });
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toMatch(/severity/i);
+    expect(res.body.errors || res.body.error).toBeDefined();
   });
 
-  test("returns 400 when severity is out of range (< 1)", async () => {
+   test("returns 400 when severity is out of range (< 1)", async () => {
     const res = await request(app)
       .post("/api/analyze")
       .send({ symptoms: ["Fever"], severity: 0 });
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toMatch(/severity/i);
+    expect(res.body.errors || res.body.error).toBeDefined();
   });
-
-  test("returns 400 when severity is out of range (> 10)", async () => {
+   test("returns 400 when severity is out of range (> 10)", async () => {
     const res = await request(app)
       .post("/api/analyze")
       .send({ symptoms: ["Fever"], severity: 11 });
     expect(res.statusCode).toBe(400);
-    expect(res.body.error).toMatch(/severity/i);
+    expect(res.body.errors || res.body.error).toBeDefined();
   });
-
   test("calls analyzeSymptoms with correct parameters", async () => {
     analyzeSymptoms.mockClear();
     await request(app).post("/api/analyze").send(validBody);

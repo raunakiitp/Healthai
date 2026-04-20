@@ -1,5 +1,6 @@
 const express = require("express");
 const { v4: uuidv4 } = require("uuid");
+const { body, param, validationResult } = require("express-validator");
 const db = require("../db/database");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -32,41 +33,58 @@ router.get("/", (req, res) => {
 });
 
 // ─── POST /api/history ────────────────────────────────────────────────────────
-router.post("/", (req, res) => {
-  try {
-    const { input, result } = req.body;
-    if (!input || !result) {
-      return res.status(400).json({ error: "input and result are required" });
+router.post(
+  "/",
+  [
+    body("input").isObject().withMessage("input object is required"),
+    body("result").isObject().withMessage("result object is required"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const id = uuidv4();
-    db.prepare(
-      "INSERT INTO analysis_history (id, user_id, input_data, result_data) VALUES (?, ?, ?, ?)"
-    ).run(id, req.user.id, JSON.stringify(input), JSON.stringify(result));
+    try {
+      const { input, result } = req.body;
+      const id = uuidv4();
+      db.prepare(
+        "INSERT INTO analysis_history (id, user_id, input_data, result_data) VALUES (?, ?, ?, ?)"
+      ).run(id, req.user.id, JSON.stringify(input), JSON.stringify(result));
 
-    res.status(201).json({ id, timestamp: new Date().toISOString() });
-  } catch (err) {
-    console.error("Save history error:", err);
-    res.status(500).json({ error: "Could not save history entry" });
+      res.status(201).json({ id, timestamp: new Date().toISOString() });
+    } catch (err) {
+      console.error("Save history error:", err);
+      res.status(500).json({ error: "Could not save history entry" });
+    }
   }
-});
+);
 
 // ─── DELETE /api/history/:id ──────────────────────────────────────────────────
-router.delete("/:id", (req, res) => {
-  try {
-    const result = db
-      .prepare("DELETE FROM analysis_history WHERE id = ? AND user_id = ?")
-      .run(req.params.id, req.user.id);
-
-    if (result.changes === 0) {
-      return res.status(404).json({ error: "Entry not found" });
+router.delete(
+  "/:id",
+  [param("id").isUUID().withMessage("Invalid ID format")],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    res.json({ message: "Deleted" });
-  } catch (err) {
-    console.error("Delete history error:", err);
-    res.status(500).json({ error: "Could not delete entry" });
+
+    try {
+      const result = db
+        .prepare("DELETE FROM analysis_history WHERE id = ? AND user_id = ?")
+        .run(req.params.id, req.user.id);
+
+      if (result.changes === 0) {
+        return res.status(404).json({ error: "Entry not found" });
+      }
+      res.json({ message: "Deleted" });
+    } catch (err) {
+      console.error("Delete history error:", err);
+      res.status(500).json({ error: "Could not delete entry" });
+    }
   }
-});
+);
 
 // ─── DELETE /api/history ──────────────────────────────────────────────────────
 router.delete("/", (req, res) => {

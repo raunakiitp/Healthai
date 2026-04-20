@@ -104,11 +104,11 @@ export default function AuthModal({ isOpen, onClose }) {
                 <div className="flex items-center justify-between px-6 pt-6 pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg">
-                      <Activity className="w-5 h-5 text-black" strokeWidth={2.5} />
+                      <Activity aria-hidden="true" className="w-5 h-5 text-black" strokeWidth={2.5} />
                     </div>
                     <div>
                       <h2 id="auth-modal-title" className="font-bold text-white text-lg leading-tight">HealthAI</h2>
-                      <p id="auth-modal-desc" className="text-xs text-zinc-500 leading-none">Smart Symptom Assistant</p>
+                      <p id="auth-modal-desc" className="text-xs text-zinc-300 leading-none">Smart Symptom Assistant</p>
                     </div>
                   </div>
                   <button
@@ -132,10 +132,10 @@ export default function AuthModal({ isOpen, onClose }) {
                         role="tab"
                         aria-selected={tab === t}
                         aria-controls={`auth-panel-${t}`}
-                        className={`relative flex-1 py-2 text-sm font-bold rounded-lg transition-colors duration-200 z-10 ${
+                        className={`relative flex-1 py-2 text-sm font-bold rounded-lg transition-colors duration-200 z-10 outline-none focus-visible:ring-2 focus-visible:ring-white ${
                           tab === t
                             ? "text-black"
-                            : "text-zinc-500 hover:text-zinc-300"
+                            : "text-zinc-500 hover:text-zinc-300 focus-visible:text-white"
                         }`}
                       >
                         {tab === t && (
@@ -175,14 +175,14 @@ export default function AuthModal({ isOpen, onClose }) {
                           Display Name
                         </label>
                         <div className="relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                          <User aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                           <input
                             type="text"
                             id="auth-username"
                             value={form.username}
                             onChange={(e) => updateForm("username", e.target.value)}
                             placeholder="Your name"
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-white/50 transition-all"
+                            className={inputClass}
                             required={tab === "register"}
                           />
                         </div>
@@ -196,14 +196,14 @@ export default function AuthModal({ isOpen, onClose }) {
                       Email Address
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <Mail aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                       <input
                         type="email"
                         id="auth-email"
                         value={form.email}
                         onChange={(e) => updateForm("email", e.target.value)}
                         placeholder="you@example.com"
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-white/50 transition-all"
+                        className={inputClass}
                         required
                       />
                     </div>
@@ -215,23 +215,24 @@ export default function AuthModal({ isOpen, onClose }) {
                       Password
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <Lock aria-hidden="true" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                       <input
                         type={showPass ? "text" : "password"}
                         id="auth-password"
                         value={form.password}
                         onChange={(e) => updateForm("password", e.target.value)}
                         placeholder={tab === "register" ? "At least 6 characters" : "Your password"}
-                        className="w-full pl-10 pr-12 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-white/50 transition-all"
+                        className="w-full pl-10 pr-12 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-zinc-600 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 transition-all focus:bg-white/10"
                         required
                         minLength={tab === "register" ? 6 : undefined}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPass((p) => !p)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:rounded-md"
+                        aria-label={showPass ? "Hide password" : "Show password"}
                       >
-                        {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPass ? <EyeOff aria-hidden="true" className="w-4 h-4" /> : <Eye aria-hidden="true" className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
@@ -272,11 +273,11 @@ export default function AuthModal({ isOpen, onClose }) {
                     disabled={loading}
                     whileHover={{ scale: loading ? 1 : 1.02 }}
                     whileTap={{ scale: loading ? 1 : 0.98 }}
-                    className="w-full py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg hover:bg-zinc-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+                    className="w-full py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg hover:bg-zinc-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
                   >
                     {loading ? (
                       <>
-                        <Loader className="w-4 h-4 animate-spin text-black" />
+                        <Loader aria-hidden="true" className="w-4 h-4 animate-spin text-black" />
                         {tab === "login" ? "Signing in..." : "Creating account..."}
                       </>
                     ) : (
@@ -291,9 +292,9 @@ export default function AuthModal({ isOpen, onClose }) {
                     onClick={handleGoogleLogin}
                     whileHover={{ scale: loading ? 1 : 1.02 }}
                     whileTap={{ scale: loading ? 1 : 0.98 }}
-                    className="w-full py-3 rounded-xl border border-white/10 bg-white/5 text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-all disabled:opacity-60"
+                    className="w-full py-3 rounded-xl border border-white/10 bg-white/5 text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-white/10 transition-all disabled:opacity-60 outline-none focus-visible:ring-2 focus-visible:ring-white"
                   >
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" className="w-4 h-4" />
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" className="w-4 h-4" />
                     {tab === "login" ? "Sign in with Google" : "Sign up with Google"}
                   </motion.button>
 
@@ -308,7 +309,7 @@ export default function AuthModal({ isOpen, onClose }) {
                     type="button"
                     id="auth-guest-btn"
                     onClick={onClose}
-                    className="w-full py-2.5 rounded-xl border border-white/10 text-zinc-400 text-sm font-semibold hover:bg-white/5 transition-colors"
+                    className="w-full py-2.5 rounded-xl border border-white/10 text-zinc-400 text-sm font-semibold hover:bg-white/5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white"
                   >
                     Continue as Guest
                   </button>

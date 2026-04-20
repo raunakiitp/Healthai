@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { body, validationResult } = require("express-validator");
 const { analyzeSymptoms } = require("../services/geminiService");
 
 // Sample cases for "Try Sample Case" button
@@ -31,40 +32,47 @@ const SAMPLE_CASES = [
 ];
 
 // POST /api/analyze — Main analysis endpoint
-router.post("/", async (req, res) => {
-  try {
-    const { symptoms, severity, duration, age, gender, freeText } = req.body;
+router.post(
+  "/",
+  [
+    body("symptoms").optional().isArray().withMessage("Symptoms must be an array"),
+    body("severity").isInt({ min: 1, max: 10 }).withMessage("Severity must be between 1 and 10"),
+    body("freeText").optional().isString().trim().escape(),
+    body("age").optional().custom((val) => val === "" || (Number(val) >= 0 && Number(val) <= 120)).withMessage("Valid age required"),
+    body("gender").optional().isIn(["male", "female", "other", ""]).withMessage("Invalid gender selection"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    // Validation
-    if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
-      if (!freeText || !freeText.trim()) {
+    try {
+      const { symptoms, severity, duration, age, gender, freeText } = req.body;
+
+      // Business logic validation
+      if ((!symptoms || symptoms.length === 0) && (!freeText || !freeText.trim())) {
         return res.status(400).json({
-          error: "Please provide at least one symptom",
+          error: "Please provide at least one symptom or a description",
         });
       }
-    }
 
-    if (severity === undefined || severity < 1 || severity > 10) {
-      return res.status(400).json({
-        error: "Severity must be between 1 and 10",
+      const result = await analyzeSymptoms({
+        symptoms: symptoms || [],
+        severity: Number(severity),
+        duration: duration || "Not specified",
+        age: age || "Not specified",
+        gender: gender || "Not specified",
+        freeText: freeText || "",
       });
+
+      res.json(result);
+    } catch (err) {
+      console.error("Analysis error:", err);
+      res.status(500).json({ error: "Internal server error during analysis" });
     }
-
-    const result = await analyzeSymptoms({
-      symptoms: symptoms || [],
-      severity: Number(severity),
-      duration: duration || "Not specified",
-      age: age || "Not specified",
-      gender: gender || "Not specified",
-      freeText: freeText || "",
-    });
-
-    res.json(result);
-  } catch (err) {
-    console.error("Analysis error:", err);
-    res.status(500).json({ error: "Internal server error during analysis" });
   }
-});
+);
 
 // GET /api/analyze/sample — Returns a random sample case
 router.get("/sample", (req, res) => {

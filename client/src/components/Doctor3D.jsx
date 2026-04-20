@@ -332,7 +332,12 @@ function Platform() {
 // ─── Main exported component ──────────────────────────────────────────────────
 export default function Doctor3D({ className = "" }) {
   return (
-    <div className={`w-full h-full ${className}`} style={{ background: "transparent" }}>
+    <div 
+      className={`w-full h-full ${className}`} 
+      style={{ background: "transparent" }}
+      role="img"
+      aria-label="Interactive 3D Doctor Avatar — animated medical assistant visualization"
+    >
       <Canvas
         camera={{ position: [0, 0.5, 3.8], fov: 42 }}
         shadows

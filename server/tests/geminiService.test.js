@@ -17,6 +17,11 @@ jest.mock("@google/generative-ai", () => ({
 }));
 
 const { analyzeSymptoms } = require("../services/geminiService");
+const { buildEnrichedContext } = require("../services/googleHealthKnowledge");
+
+jest.mock("../services/googleHealthKnowledge", () => ({
+  buildEnrichedContext: jest.fn().mockImplementation((syms) => Promise.resolve(syms.join(", "))),
+}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function makeGeminiResponse(obj) {
@@ -171,6 +176,23 @@ describe("analyzeSymptoms — happy path", () => {
     // freeText is appended to symptomList and appears in the prompt's enrichedContext or symptoms section
     expect(promptArg).toMatch(/Productive cough with yellow mucus|Cough/);
     expect(result.conditions).toBeDefined();
+  });
+
+  test("falls back to raw symptoms if buildEnrichedContext fails", async () => {
+    mockGenerateContent.mockResolvedValue(makeGeminiResponse(VALID_GEMINI_RESULT));
+    buildEnrichedContext.mockRejectedValueOnce(new Error("NLP service down"));
+
+    const result = await analyzeSymptoms({
+      symptoms: ["Headache"],
+      severity: 3,
+      duration: "1h",
+      age: 20,
+      gender: "male",
+      freeText: "",
+    });
+
+    expect(result.conditions).toBeDefined();
+    expect(buildEnrichedContext).toHaveBeenCalled();
   });
 });
 

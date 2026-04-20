@@ -50,14 +50,26 @@ app.use(
   })
 );
 
-// ─── Security: HTTP security headers via helmet ───────────────────────────────
 app.use(
   helmet({
-    contentSecurityPolicy: false, // CSP managed by frontend build
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'", "https://www.gstatic.com"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "img-src": ["'self'", "data:", "https://www.gstatic.com", "https://*.googleusercontent.com"],
+        "connect-src": ["'self'", "https://prod.spline.design", "https://*.googleapis.com", "https://identitytoolkit.googleapis.com"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
+        "object-src": ["'none'"],
+        "frame-src": ["'self'", "https://prod.spline.design", "https://*.firebaseapp.com"],
+        "media-src": ["'self'"],
+        "worker-src": ["'self'", "blob:"],
+      },
+    },
     crossOriginEmbedderPolicy: false,
   })
 );
-
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 

@@ -1,17 +1,30 @@
-# 🏥 HealthAI — Smart Medical Symptom Assistant
-
-> **Google Antigravity Hackathon Submission**
-> An AI-powered medical assistant that analyses symptoms, assesses risk, and connects users with nearby healthcare — built with Google Gemini and Google Maps.
+> **Google Cloud Antigravity Hackathon Submission**
+> HealthAI is an advanced, AI-powered medical first-response system designed to bridge the gap between symptom onset and clinical intervention.
 
 ---
 
-## 📌 Chosen Vertical
+## 🏥 Problem Statement
 
-**Healthcare / Smart Health Assistant**
+### The "First-Response Gap"
+Millions of people worldwide face significant barriers to immediate healthcare guidance. Whether due to geographic isolation, high costs, or overcrowded emergency rooms, there is a dangerous "first-response gap" where patients are unsure if their symptoms require urgent medical attention or can be safely managed at home. 
 
-HealthAI acts as a first-response wellness companion. Users describe their symptoms in plain language; the assistant intelligently analyses those symptoms, provides a risk assessment (Low / Moderate / High), offers personalised guidance, and helps locate the nearest clinics — all within seconds.
+This uncertainty lead to two critical issues:
+1. **ER Overcrowding**: Low-risk patients flooding emergency rooms for minor issues.
+2. **Neglected Emergencies**: High-risk patients delaying care for life-threatening conditions (e.g., stroke, myocardial infarction) because they misjudge their symptoms.
+
+### Our Solution
+**HealthAI** bridges this gap by providing a high-precision, AI-driven triage system. By analyzing symptoms in plain language, extracting medical entities via the **Google Natural Language API**, and reasoning with **Google Gemini**, HealthAI provides immediate, actionable, and location-aware medical guidance, directing high-risk patients to the nearest hospital via **Google Maps**.
 
 ---
+
+## 📌 Vertical Alignment: Healthcare
+
+HealthAI is purpose-built for the **Healthcare Vertical**, specifically optimized as a **Smart Medical Symptom Assistant**. It leverages Google's most advanced AI and data services to provide:
+
+- **Intelligent Triage**: Automated risk classification (Low/Moderate/High).
+- **Medical Entity Extraction**: Using NLP to understand clinical context within free-text descriptions.
+- **Location-Aware Care**: Instant discovery of validated clinics and hospitals.
+- **Secure Identity**: Managed patient accounts via **Firebase Authentication**.
 
 ## 🧠 Approach & Logic
 
@@ -48,32 +61,27 @@ User Input (symptoms, age, duration)
 
 ---
 
-## ✨ Features
-
 | Feature | Description |
 |---|---|
-| 🧠 AI Symptom Analysis | Powered by **Google Gemini 2.5 Flash** — structured medical reasoning |
-| 🗺️ Nearby Hospitals | **Google Maps JavaScript API** — shows clinics within 5 km |
-| 👤 User Accounts | Register / Login with JWT auth, custom avatar & profile colour |
-| 📋 History Panel | Analysis history synced to server (authenticated) or stored locally (guest) |
-| 📊 Risk Stats | Personal breakdown of Low / Moderate / High analyses over time |
-| 🔑 Change Password | Self-service from inside the profile panel |
-| 🌙 Dark / Light Mode | System preference aware with manual toggle |
-| 👑 Admin Dashboard | Platform stats, user management, activity feed |
+| 🧠 AI Symptom Analysis | Powered by **Google Gemini 2.5 Flash** — advanced medical reasoning |
+| 🔍 Natural Language NLP | **Google Cloud Natural Language API** — extracts clinical entities from free-text |
+| 🔐 Firebase Auth | **Firebase Authentication** — Secure Google Sign-In and Email identity |
+| 🗺️ Nearby Hospitals | **Google Maps JavaScript API** — shows validated clinics within 5 km |
+| 🛡️ Security Hardened | Helmet, CORS, Input Sanitization, and Rate Limiting for patient safety |
+| 📋 Clinical History | Secure, UID-synced analysis history with local SQLite persistence |
+| 👑 Admin Command | Real-time platform metrics, user management, and activity monitoring |
 
 ---
 
-## 🛠️ Tech Stack
-
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Three.js / React Three Fiber |
+| **Frontend** | React 19, Vite, Tailwind CSS, Framer Motion, Three.js |
 | **Backend** | Node.js, Express 5 |
 | **Database** | SQLite (better-sqlite3) |
-| **Auth** | JWT + bcrypt |
-| **AI** | Google Gemini 2.5 Flash (`@google/generative-ai`) |
-| **Maps** | Google Maps JavaScript API |
-| **DevOps** | Docker, Google Cloud Run, Google Cloud Build |
+| **Security** | **Firebase Admin SDK**, Helmet, express-validator |
+| **AI / NLP** | **Google Gemini** & **Google Cloud Natural Language API** |
+| **Maps** | **Google Maps JavaScript API** & **Places API** |
+| **Hosting (CI/CD)**| **Google Cloud Run** & **Google Cloud Build** |
 
 ---
 
@@ -190,15 +198,15 @@ npm run dev   # runs on http://localhost:5173
 
 ---
 
-## 🌐 Google Services Used
-
 | Service | How It's Used |
 |---|---|
-| **Google Gemini 2.5 Flash** | Core AI engine for symptom analysis and risk classification |
-| **Google Maps JavaScript API** | Interactive map to display nearby hospitals/clinics |
-| **Google Places API** | Fetches nearby healthcare facilities based on user location |
-| **Google Cloud Run** | Serverless container hosting for the full-stack application |
-| **Google Cloud Build** | CI/CD pipeline — auto-builds and deploys on git push |
+| **Google Gemini 2.5 Flash** | Core AI engine for clinical reasoning and risk classification |
+| **Firebase Authentication** | Secure identity management and managed Google Sign-In |
+| **Google Cloud NL API** | Medical entity extraction from free-text symptoms |
+| **Google Maps JS API** | Visualizing hospital and clinic locations for immediate care |
+| **Google Places API** | Discovering nearby healthcare facilities based on geolocation |
+| **Google Cloud Run** | Scalable, serverless hosting for the full-stack container |
+| **Google Cloud Build** | Automated DevOps pipeline for continuous integration |
 
 ---
 

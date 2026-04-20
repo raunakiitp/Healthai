@@ -31,7 +31,7 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
         {/* Logo */}
         <motion.div className="flex items-center gap-3" whileHover={{ scale: 1.02 }}>
           <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg">
-            <Activity className="w-5 h-5 text-black" strokeWidth={2.5} />
+            <Activity aria-hidden="true" className="w-5 h-5 text-black" strokeWidth={2.5} />
           </div>
           <div>
             <span className="font-bold text-xl text-white">HealthAI</span>
@@ -51,7 +51,7 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
               onClick={onOpenAdmin}
               id="nav-admin-btn"
               aria-label="Open admin dashboard"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <Shield className="w-4 h-4" aria-hidden="true" />
               Admin
@@ -63,7 +63,7 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onOpenHistory}
-            className="flex items-center gap-2 text-sm relative text-zinc-300 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors"
+            className="flex items-center gap-2 text-sm relative text-zinc-300 hover:text-white px-3 py-2 rounded-xl hover:bg-white/5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white"
             id="nav-history-btn"
             aria-label={`View analysis history${historyCount > 0 ? `, ${historyCount} item${historyCount > 1 ? 's' : ''}` : ''}`}
           >
@@ -83,11 +83,11 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
               whileTap={{ scale: 0.95 }}
               onClick={onOpenProfile}
               id="nav-profile-btn"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <AvatarCircle user={user} size="sm" />
               <span className="max-w-[100px] truncate font-medium">{user.username}</span>
-              {isAdmin && <Crown className="w-3.5 h-3.5 text-zinc-400" />}
+              {isAdmin && <Crown aria-hidden="true" className="w-3.5 h-3.5 text-zinc-400" />}
             </motion.button>
           ) : (
             <motion.button
@@ -95,9 +95,9 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
               whileTap={{ scale: 0.95 }}
               onClick={onOpenAuth}
               id="nav-signin-btn"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold shadow-lg hover:bg-zinc-200 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-sm font-semibold shadow-lg hover:bg-zinc-200 transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
             >
-              <LogIn className="w-4 h-4" />
+              <LogIn aria-hidden="true" className="w-4 h-4" />
               Sign In
             </motion.button>
           )}
@@ -110,7 +110,7 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
             id="dark-mode-toggle"
             aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             aria-pressed={darkMode}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -128,7 +128,7 @@ export default function Navbar({ darkMode, onToggleDark, onOpenHistory, historyC
 
         {/* Mobile hamburger */}
         <button
-          className="sm:hidden p-2 rounded-lg text-zinc-400 hover:text-white"
+          className="sm:hidden p-2 rounded-lg text-zinc-400 hover:text-white outline-none focus-visible:ring-2 focus-visible:ring-white"
           onClick={() => setMobileMenu(!mobileMenu)}
           aria-label={mobileMenu ? "Close menu" : "Open menu"}
           aria-expanded={mobileMenu}

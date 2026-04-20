@@ -7,10 +7,11 @@
   "persona": "Smart Medical Symptom Assistant",
 
   "problem_statement": {
-    "identified_gap": "Millions of people face barriers to quick healthcare access — long waits, high costs, and limited information about whether their symptoms require emergency care or home management.",
-    "solution": "HealthAI is an AI-powered first-response wellness companion that lets users describe symptoms in plain language, then intelligently analyses them, assesses risk level (Low / Moderate / High), provides personalised guidance, and directs users to the nearest clinics — all within seconds.",
-    "target_users": ["General public", "Rural populations with limited clinic access", "First-time patients unsure of symptom severity"],
-    "impact": "Reduces unnecessary emergency room visits for low-risk symptoms and ensures high-risk symptoms are escalated immediately with clear emergency guidance."
+    "title": "Closing the First-Response Gap in Digital Healthcare",
+    "identified_gap": "Millions of people face significant barriers to quick healthcare access — long waits, high costs, and dangerous uncertainty about whether their symptoms require emergency care or home management. This 'first-response gap' leads to both overcrowded ERs and neglected critical conditions.",
+    "solution": "HealthAI is a state-of-the-art AI-powered wellness companion that uses Google Gemini and Natural Language processing to bridge this gap. It allows users to describe symptoms in plain language, performs a high-precision risk assessment (Low / Moderate / High), provides personalized medically-grounded guidance, and directs users to the nearest validated healthcare facilities via Google Maps.",
+    "target_users": ["The general public seeking quick triage", "Rural populations with limited clinic access", "At-risk patients needing immediate severity assessment"],
+    "impact": "Reduces the burden on emergency services by accurately triaging low-risk cases while ensuring high-risk patients are immediately escalated with clear guidance to the nearest hospital."
   },
 
   "google_services": [
@@ -44,13 +45,19 @@
       "service": "Google Cloud Build",
       "usage": "CI/CD pipeline — automatically builds Docker image and deploys to Cloud Run on every git push to main",
       "file": "cloudbuild.yaml"
+    },
+    {
+      "service": "Firebase Authentication",
+      "usage": "Secure, managed identity provider for user accounts, supporting both Email/Password and Google Sign-In with backend token verification via Admin SDK",
+      "file": "client/src/context/AuthContext.jsx"
     }
   ],
 
   "tech_stack": {
     "frontend": ["React 19", "Vite", "Tailwind CSS", "Framer Motion", "Three.js"],
     "backend": ["Node.js", "Express 5", "SQLite (better-sqlite3)"],
-    "auth": ["JWT", "bcrypt"],
+    "auth": ["Firebase Authentication", "Google Sign-In"],
+    "nlp": ["Google Cloud Natural Language API"],
     "testing": ["Jest", "Supertest"],
     "devops": ["Docker", "Google Cloud Run", "Google Cloud Build"]
   },

@@ -26,6 +26,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
+    "express-validator": "^7.3.2",
     "firebase-admin": "^13.8.0",
     "helmet": "^8.0.0",
     "uuid": "^13.0.0"
@@ -36,6 +37,9 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./tests/jest.setup.js"
+    ],
     "testMatch": [
       "**/tests/**/*.test.js"
     ],

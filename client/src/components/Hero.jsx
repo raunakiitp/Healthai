@@ -11,12 +11,12 @@ import { SplineScene } from "./ui/SplineScene";
 const SPLINE_SCENE = "https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode";
 
 const EXAMPLE_CHIPS = [
-  { label: "Fever + Chills", icon: <Thermometer className="w-3.5 h-3.5" /> },
-  { label: "Chest Pain",     icon: <HeartPulse className="w-3.5 h-3.5" /> },
-  { label: "Headache",       icon: <Brain className="w-3.5 h-3.5" /> },
-  { label: "Cough + Cold",   icon: <Wind className="w-3.5 h-3.5" /> },
-  { label: "Fatigue",        icon: <Moon className="w-3.5 h-3.5" /> },
-  { label: "Nausea",         icon: <Frown className="w-3.5 h-3.5" /> },
+  { label: "Fever + Chills", icon: <Thermometer aria-hidden="true" className="w-3.5 h-3.5" /> },
+  { label: "Chest Pain",     icon: <HeartPulse aria-hidden="true" className="w-3.5 h-3.5" /> },
+  { label: "Headache",       icon: <Brain aria-hidden="true" className="w-3.5 h-3.5" /> },
+  { label: "Cough + Cold",   icon: <Wind aria-hidden="true" className="w-3.5 h-3.5" /> },
+  { label: "Fatigue",        icon: <Moon aria-hidden="true" className="w-3.5 h-3.5" /> },
+  { label: "Nausea",         icon: <Frown aria-hidden="true" className="w-3.5 h-3.5" /> },
 ];
 
 export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
@@ -98,12 +98,13 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-black text-[10px] sm:text-xs font-semibold text-zinc-300 uppercase tracking-widest"
           >
-            <motion.span
+             <motion.span
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="w-1.5 h-1.5 rounded-full bg-zinc-300 inline-block"
+              aria-hidden="true"
             />
-            <Activity className="w-3 h-3" />
+            <Activity aria-hidden="true" className="w-3 h-3" />
             AI Medical Consultant
           </motion.div>
 
@@ -151,6 +152,9 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
 
               <div className="p-4">
                 <div className="flex items-end gap-2">
+                  <label htmlFor="hero-symptom-input" className="sr-only">
+                    Detailed symptom description
+                  </label>
                   <textarea
                     ref={textareaRef}
                     id="hero-symptom-input"
@@ -158,7 +162,7 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
                     onChange={(e) => setFreeText(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                     placeholder={isListening ? "🎤 Listening… speak your symptoms" : "Describe your symptoms…"}
-                    className="flex-1 resize-none bg-transparent text-white placeholder-zinc-500 text-sm leading-relaxed focus:outline-none min-h-[64px] py-1"
+                    className="flex-1 resize-none bg-transparent text-white placeholder-zinc-500 text-sm leading-relaxed focus:outline-none min-h-[64px] py-1 border-none focus:ring-0"
                     rows={3}
                   />
                   {isSupported && (
@@ -166,13 +170,13 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
                       whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                       onClick={toggleListening}
                       id="voice-input-btn"
-                      className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                      className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all outline-none focus-visible:ring-2 focus-visible:ring-white ${
                         isListening
                           ? "bg-white/20 text-white animate-pulse"
-                          : "bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white"
+                          : "bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white focus-visible:border-white"
                       }`}
                     >
-                      {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                      {isListening ? <MicOff aria-hidden="true" className="w-4 h-4" /> : <Mic aria-hidden="true" className="w-4 h-4" />}
                     </motion.button>
                   )}
                 </div>
@@ -188,16 +192,16 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
                     onClick={handleSubmit}
                     disabled={!freeText.trim() || isLoading}
                     id="hero-analyze-btn"
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium text-sm text-black bg-white hover:bg-zinc-200 transition-all disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium text-sm text-black bg-white hover:bg-zinc-200 transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black disabled:opacity-50"
                   >
-                    <Zap className="w-4 h-4 border border-black rounded-full p-[2px]" />
+                    <Zap aria-hidden="true" className="w-4 h-4 border border-black rounded-full p-[2px]" />
                     {isLoading ? "Analyzing…" : "Analyze Symptoms"}
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                     onClick={onLoadSample}
                     id="try-sample-btn"
-                    className="px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-300 border border-white/10 bg-white/5 hover:bg-white/10 transition-all whitespace-nowrap"
+                    className="px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-300 border border-white/10 bg-white/5 hover:bg-white/10 transition-all outline-none focus-visible:ring-2 focus-visible:ring-white whitespace-nowrap"
                   >
                     Try Sample
                   </motion.button>
@@ -223,7 +227,7 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
                  whileHover={{ scale: 1.05, y: -2 }}
                  whileTap={{ scale: 0.95 }}
                  onClick={() => handleChipClick(chip)}
-                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 border border-white/10 hover:border-white/20 hover:text-white transition-all bg-black/80"
+                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 border border-white/10 hover:border-white/20 hover:text-white transition-all bg-black/80 outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:border-white"
               >
                 {chip.icon} <span className="ml-0.5">{chip.label}</span>
               </motion.button>
@@ -237,9 +241,9 @@ export default function Hero({ onAnalyze, onLoadSample, isLoading }) {
             transition={{ delay: 0.9 }}
             className="flex items-center gap-1.5 text-[0.65rem] text-zinc-600 uppercase tracking-widest mt-2"
           >
-            <Sparkles className="w-3 h-3 text-zinc-600" />
+            <Sparkles aria-hidden="true" className="w-3 h-3 text-zinc-600" />
             Powered by Google Gemini AI
-            <Sparkles className="w-3 h-3 text-zinc-600" />
+            <Sparkles aria-hidden="true" className="w-3 h-3 text-zinc-600" />
           </motion.div>
         </div>
       </motion.div>

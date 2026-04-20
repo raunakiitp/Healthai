@@ -1,4 +1,5 @@
 const admin = require("../config/firebase-admin");
+const db = require("../db/database");
 
 /**
  * Middleware to verify Firebase ID tokens.
@@ -18,15 +19,22 @@ async function authMiddleware(req, res, next) {
     // Verify the ID token sent from the client
     const decodedToken = await admin.auth().verifyIdToken(token);
     
+    // Fetch additional fields from local DB (like role, is_banned)
+    const localUser = db.prepare("SELECT role, is_banned FROM users WHERE id = ?").get(decodedToken.uid);
+    
     // Attach user info to request
-    // Note: Firebase uses 'uid', while our previous logic used 'id'.
-    // We map uid -> id to maintain compatibility with existing controller logic.
     req.user = {
       id: decodedToken.uid,
       email: decodedToken.email,
       name: decodedToken.name || decodedToken.email.split('@')[0],
-      picture: decodedToken.picture
+      picture: decodedToken.picture,
+      role: localUser?.role || "user",
+      is_banned: !!localUser?.is_banned
     };
+    
+    if (req.user.is_banned) {
+      return res.status(403).json({ error: "Your account has been suspended" });
+    }
     
     next();
   } catch (err) {

@@ -39,6 +39,8 @@ db.exec(`
     created_at  TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
+
+  CREATE INDEX IF NOT EXISTS idx_history_user_id ON analysis_history(user_id);
 `);
 
 // Migrate: add missing columns if upgrading from old schema
